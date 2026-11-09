@@ -1,34 +1,40 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class ColorShip extends PositionComponent with KeyboardHandler {
+class ColorShip extends PositionComponent with KeyboardHandler, CollisionCallbacks {
   double radius;
   Color color;
   int arrows;
   double rotationDuration;
   double glowingDuration;
   double speed;
+  bool hasController;
+  bool isEnemy;
 
   Vector2 _direction = Vector2.zero();
   ColorShip({
+    this.isEnemy = false,
+    this.hasController = false,
     this.radius = 16,
     this.color = Colors.blue,
     super.position,
     this.arrows = 2,
     this.rotationDuration = 8,
     this.glowingDuration = 4,
-    this.speed = 50
+    this.speed = 50,
   });
   @override
   FutureOr<void> onLoad() {
     // outer glow
     anchor = Anchor.center;
     size = Vector2(radius * 2, radius * 2);
+    add(CircleHitbox(radius: radius));
     CircleComponent layer1 = CircleComponent(
       radius: radius,
       position: position,
@@ -142,34 +148,52 @@ class ColorShip extends PositionComponent with KeyboardHandler {
 
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    var dx = 0.0;
-    var dy = 0.0;
+    if (hasController) {
+      var dx = 0.0;
+      var dy = 0.0;
 
-    if (keysPressed.contains(LogicalKeyboardKey.keyA) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
-      dx -= 1;
-    }
-    if (keysPressed.contains(LogicalKeyboardKey.keyD) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
-      dx += 1;
-    }
-    if (keysPressed.contains(LogicalKeyboardKey.keyW) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
-      dy -= 1;
-    }
-    if (keysPressed.contains(LogicalKeyboardKey.keyS) ||
-        keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
-      dy += 1;
+      if (keysPressed.contains(LogicalKeyboardKey.keyA) ||
+          keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
+        dx -= 1;
+      }
+      if (keysPressed.contains(LogicalKeyboardKey.keyD) ||
+          keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
+        dx += 1;
+      }
+      if (keysPressed.contains(LogicalKeyboardKey.keyW) ||
+          keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
+        dy -= 1;
+      }
+      if (keysPressed.contains(LogicalKeyboardKey.keyS) ||
+          keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
+        dy += 1;
+      }
+
+      _direction = Vector2(dx, dy);
     }
 
-    _direction = Vector2(dx, dy);
     return true;
   }
 
   @override
   void update(double dt) {
-    if (_direction != Vector2.zero()) {
+    if (_direction != Vector2.zero() && hasController) {
       position += _direction.normalized() * speed * dt;
     }
+  }
+
+  @override
+  void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
+    if(other is ColorShip && other.isEnemy){
+      print("enemy");
+    }else {
+      print("no");
+    }
+    super.onCollision(intersectionPoints, other);
+  }
+  @override
+  void onCollisionEnd(PositionComponent other) {
+    print("end");
+    super.onCollisionEnd(other);
   }
 }
