@@ -5,11 +5,13 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 
-class BasicShip extends PositionComponent {
+class ColorShip extends PositionComponent {
   double radius;
   Color color;
   int arrows;
-  BasicShip({this.radius = 16, this.color = Colors.blue, super.position, this.arrows=2});
+  double rotationDuration;
+  double glowingDuration;
+  ColorShip({this.radius = 16, this.color = Colors.blue, super.position, this.arrows=2, this.rotationDuration=8, this.glowingDuration=4});
   @override
   FutureOr<void> onLoad() {
     // outer glow
@@ -25,7 +27,7 @@ class BasicShip extends PositionComponent {
     layer1.add(
       GlowEffect(
         32,
-        EffectController(duration: 4, infinite: true),
+        EffectController(duration: glowingDuration, infinite: true),
         style: BlurStyle.outer,
       ),
     );
@@ -37,12 +39,13 @@ class BasicShip extends PositionComponent {
     layer3.anchor = Anchor.center;
     layer3.paint = Paint()
       ..color = color
-      ..style = PaintingStyle.stroke;
+      ..style = PaintingStyle.stroke
+      ..strokeWidth=2;
     layer3.position = Vector2(radius, radius);
     layer3.add(
       GlowEffect(
         4,
-        EffectController(duration: 4, infinite: true),
+        EffectController(duration: glowingDuration, infinite: true),
         style: BlurStyle.inner,
       ),
     );
@@ -60,11 +63,27 @@ class BasicShip extends PositionComponent {
     layer2.add(
       GlowEffect(
         1,
-        EffectController(duration: 4, infinite: true),
+        EffectController(duration: glowingDuration, infinite: true),
         style: BlurStyle.solid,
       ),
     );
     add(layer2);
+    CircleComponent layer4 = CircleComponent(
+      radius: (radius / 2)*0.95,
+      position: position,
+    );
+    layer4.anchor = Anchor.center;
+    layer4.paint = Paint()
+      ..color = color;
+    layer4.position = Vector2(radius, radius);
+    layer4.add(
+      GlowEffect(
+        4,
+        EffectController(duration: glowingDuration, infinite: true, alternate: true),
+        style: BlurStyle.inner,
+      ),
+    );
+    add(layer4);
 
     // arrows, min 2
     final gap = radius * 0.3; // 0.2~0.5
@@ -90,13 +109,13 @@ class BasicShip extends PositionComponent {
         GlowEffect(
           1,
           style: BlurStyle.solid,
-          EffectController(duration: 4, infinite: true),
+          EffectController(duration: glowingDuration, infinite: true),
         ),
       );
       add(shield);
     }
 
-    add(RotateEffect.by(pi * 2, EffectController(duration: 8, infinite: true)));
+    add(RotateEffect.by(pi * 2, EffectController(duration: rotationDuration, infinite: true)));
 
     return super.onLoad();
   }
