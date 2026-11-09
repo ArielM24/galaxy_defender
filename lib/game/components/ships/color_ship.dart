@@ -4,14 +4,26 @@ import 'dart:math';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
-class ColorShip extends PositionComponent {
+class ColorShip extends PositionComponent with KeyboardHandler {
   double radius;
   Color color;
   int arrows;
   double rotationDuration;
   double glowingDuration;
-  ColorShip({this.radius = 16, this.color = Colors.blue, super.position, this.arrows=2, this.rotationDuration=8, this.glowingDuration=4});
+  double speed;
+
+  Vector2 _direction = Vector2.zero();
+  ColorShip({
+    this.radius = 16,
+    this.color = Colors.blue,
+    super.position,
+    this.arrows = 2,
+    this.rotationDuration = 8,
+    this.glowingDuration = 4,
+    this.speed = 50
+  });
   @override
   FutureOr<void> onLoad() {
     // outer glow
@@ -40,7 +52,7 @@ class ColorShip extends PositionComponent {
     layer3.paint = Paint()
       ..color = color
       ..style = PaintingStyle.stroke
-      ..strokeWidth=2;
+      ..strokeWidth = 2;
     layer3.position = Vector2(radius, radius);
     layer3.add(
       GlowEffect(
@@ -69,17 +81,20 @@ class ColorShip extends PositionComponent {
     );
     add(layer2);
     CircleComponent layer4 = CircleComponent(
-      radius: (radius / 2)*0.95,
+      radius: (radius / 2) * 0.95,
       position: position,
     );
     layer4.anchor = Anchor.center;
-    layer4.paint = Paint()
-      ..color = color;
+    layer4.paint = Paint()..color = color;
     layer4.position = Vector2(radius, radius);
     layer4.add(
       GlowEffect(
         4,
-        EffectController(duration: glowingDuration, infinite: true, alternate: true),
+        EffectController(
+          duration: glowingDuration,
+          infinite: true,
+          alternate: true,
+        ),
         style: BlurStyle.inner,
       ),
     );
@@ -115,8 +130,46 @@ class ColorShip extends PositionComponent {
       add(shield);
     }
 
-    add(RotateEffect.by(pi * 2, EffectController(duration: rotationDuration, infinite: true)));
+    add(
+      RotateEffect.by(
+        pi * 2,
+        EffectController(duration: rotationDuration, infinite: true),
+      ),
+    );
 
     return super.onLoad();
+  }
+
+  @override
+  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    var dx = 0.0;
+    var dy = 0.0;
+
+    if (keysPressed.contains(LogicalKeyboardKey.keyA) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
+      dx -= 1;
+    }
+    if (keysPressed.contains(LogicalKeyboardKey.keyD) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
+      dx += 1;
+    }
+    if (keysPressed.contains(LogicalKeyboardKey.keyW) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
+      dy -= 1;
+    }
+    if (keysPressed.contains(LogicalKeyboardKey.keyS) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
+      dy += 1;
+    }
+
+    _direction = Vector2(dx, dy);
+    return true;
+  }
+
+  @override
+  void update(double dt) {
+    if (_direction != Vector2.zero()) {
+      position += _direction.normalized() * speed * dt;
+    }
   }
 }
