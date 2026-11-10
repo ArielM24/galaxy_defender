@@ -9,8 +9,10 @@ environment:
 dependencies:
   drift: ^2.35.3
   flame: ^1.38.2
+  flame_bloc: ^1.12.24
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_riverpod: ^3.5.0
   riverpod: ^3.5.0
 

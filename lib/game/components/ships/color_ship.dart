@@ -4,10 +4,16 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:galaxy_defender/core/bloc/bloc/ship_bloc.dart';
 
-class ColorShip extends PositionComponent with KeyboardHandler, CollisionCallbacks {
+class ColorShip extends PositionComponent
+    with
+        KeyboardHandler,
+        CollisionCallbacks,
+        FlameBlocReader<ShipBloc, ShipState> {
   double radius;
   Color color;
   int arrows;
@@ -16,6 +22,7 @@ class ColorShip extends PositionComponent with KeyboardHandler, CollisionCallbac
   double speed;
   bool hasController;
   bool isEnemy;
+  String faction;
 
   Vector2 _direction = Vector2.zero();
   ColorShip({
@@ -28,9 +35,11 @@ class ColorShip extends PositionComponent with KeyboardHandler, CollisionCallbac
     this.rotationDuration = 8,
     this.glowingDuration = 4,
     this.speed = 50,
+    this.faction = "",
   });
+
   @override
-  FutureOr<void> onLoad() {
+  Future<void> onLoad() {
     // outer glow
     anchor = Anchor.center;
     size = Vector2(radius * 2, radius * 2);
@@ -184,16 +193,17 @@ class ColorShip extends PositionComponent with KeyboardHandler, CollisionCallbac
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if(other is ColorShip && other.isEnemy){
-      print("enemy");
-    }else {
-      print("no");
+    if (other is ColorShip) {
+      bloc.add(ShipCollidingEvent());
     }
     super.onCollision(intersectionPoints, other);
   }
+
   @override
   void onCollisionEnd(PositionComponent other) {
-    print("end");
+    if (other is ColorShip) {
+      bloc.add(ShipEndCollidingEvent());
+    }
     super.onCollisionEnd(other);
   }
 }
