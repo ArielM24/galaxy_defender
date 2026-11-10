@@ -5,18 +5,23 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:galaxy_defender/core/bloc/bloc/ship_bloc.dart';
+import 'package:galaxy_defender/core/bloc/repository/ship_repository.dart';
+import 'package:galaxy_defender/core/bloc/ship/ship_bloc.dart';
 import 'package:galaxy_defender/game/components/ships/color_ship.dart';
 import 'package:galaxy_defender/game/components/status_text.dart';
 
 class GalaxyGame extends FlameGame
     with HasKeyboardHandlerComponents, HasGameReference, HasCollisionDetection {
+  final ShipRepository shipRepository;
+  GalaxyGame({required this.shipRepository});
   @override
   Future<void> onLoad() async {
     await add(
       FlameMultiBlocProvider(
         providers: [
-          FlameBlocProvider<ShipBloc, ShipState>(create: () => ShipBloc()),
+          FlameBlocProvider<ShipBloc, ShipState>(
+            create: () => ShipBloc(repository: shipRepository),
+          ),
         ],
         children: [
           StatusText(position: Vector2(game.size.x - 150, 0)),

@@ -7,7 +7,7 @@ import 'package:flame/effects.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:galaxy_defender/core/bloc/bloc/ship_bloc.dart';
+import 'package:galaxy_defender/core/bloc/ship/ship_bloc.dart';
 
 class ColorShip extends PositionComponent
     with

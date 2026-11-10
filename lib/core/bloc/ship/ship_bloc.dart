@@ -2,12 +2,15 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:galaxy_defender/core/bloc/repository/ship_repository.dart';
 
 part 'ship_event.dart';
 part 'ship_state.dart';
 
 class ShipBloc extends Bloc<ShipEvent, ShipState> {
-  ShipBloc() : super(ShipState(status: ShipStatus.initial)) {
+  final ShipRepository repository;
+  ShipBloc({required this.repository})
+    : super(ShipState(status: ShipStatus.initial)) {
     on<ShipCollidingEvent>(_onShipColliding);
     on<ShipEndCollidingEvent>(_onShipEndColliding);
   }

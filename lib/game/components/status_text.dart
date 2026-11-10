@@ -1,6 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame_bloc/flame_bloc.dart';
-import 'package:galaxy_defender/core/bloc/bloc/ship_bloc.dart';
+import 'package:galaxy_defender/core/bloc/ship/ship_bloc.dart';
 
 class StatusText extends TextBoxComponent
     with FlameBlocListenable<ShipBloc, ShipState>, HasGameReference {
