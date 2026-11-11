@@ -5,7 +5,7 @@ import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:galaxy_defender/core/bloc/repository/ship_repository.dart';
+import 'package:galaxy_defender/data/repository/ship_repository.dart';
 import 'package:galaxy_defender/core/bloc/ship/ship_bloc.dart';
 import 'package:galaxy_defender/game/components/ships/color_ship.dart';
 import 'package:galaxy_defender/game/components/status_text.dart';

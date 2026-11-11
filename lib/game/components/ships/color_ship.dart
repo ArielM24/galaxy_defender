@@ -194,7 +194,7 @@ class ColorShip extends PositionComponent
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is ColorShip) {
-      bloc.add(ShipCollidingEvent());
+      bloc.add(ShipStartCollidedEvent());
     }
     super.onCollision(intersectionPoints, other);
   }
@@ -202,7 +202,7 @@ class ColorShip extends PositionComponent
   @override
   void onCollisionEnd(PositionComponent other) {
     if (other is ColorShip) {
-      bloc.add(ShipEndCollidingEvent());
+      bloc.add(ShipEndColledEvent());
     }
     super.onCollisionEnd(other);
   }
