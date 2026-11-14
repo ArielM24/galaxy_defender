@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 
 class SpaceBackground extends StatefulWidget {
-  final Widget child;
+  final Widget? child;
+  final int seed;
 
-  const SpaceBackground({super.key, required this.child});
+  const SpaceBackground({super.key, this.child, this.seed = 42});
 
   @override
   State<SpaceBackground> createState() => _SpaceBackgroundState();
@@ -16,16 +17,17 @@ class _SpaceBackgroundState extends State<SpaceBackground> {
   late final Ticker _ticker;
   final _timeNotifier = ValueNotifier<double>(0.0);
 
-  final Random _rng = Random(42);
+  late final Random _rng;
   late final List<_Star> _stars = List.generate(120, (_) => _Star.random(_rng));
   late final List<_Nebula> _nebulae = List.generate(
-    5,
+    6,
     (_) => _Nebula.random(_rng),
   );
 
   @override
   void initState() {
     super.initState();
+    _rng = Random(widget.seed);
     _ticker = Ticker((elapsed) {
       _timeNotifier.value = DateTime.now().millisecondsSinceEpoch / 1000.0;
     })..start();
@@ -55,7 +57,7 @@ class _SpaceBackgroundState extends State<SpaceBackground> {
               size: Size.infinite,
               painter: _StarPainter(stars: _stars, t: t),
             ),
-            widget.child,
+            ?widget.child,
           ],
         ),
       ),

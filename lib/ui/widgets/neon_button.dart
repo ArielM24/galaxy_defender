@@ -5,11 +5,13 @@ class NeonButton extends StatelessWidget {
   final double margin;
   final Function? onTap;
   final Color color;
+  final IconData? icon;
   const NeonButton({
-    required this.text,
+    this.text = "",
     this.color = Colors.cyanAccent,
     this.margin = 32,
     this.onTap,
+    this.icon,
     super.key,
   });
 
@@ -45,17 +47,23 @@ class NeonButton extends StatelessWidget {
           ),
           overlayColor: color.withValues(alpha: 0.2),
         ),
-        child: Text(
-          text,
-          style: TextStyle(
-            fontFamily: 'Audiowide',
-            fontSize: 18,
-            shadows: [
-              Shadow(color: color, blurRadius: 10),
-              Shadow(color: color, blurRadius: 20),
-              Shadow(color: color, blurRadius: 40),
-            ],
-          ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (icon != null) Icon(icon),
+            Text(
+              text,
+              style: TextStyle(
+                fontFamily: 'Audiowide',
+                fontSize: 18,
+                shadows: [
+                  Shadow(color: color, blurRadius: 10),
+                  Shadow(color: color, blurRadius: 20),
+                  Shadow(color: color, blurRadius: 40),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

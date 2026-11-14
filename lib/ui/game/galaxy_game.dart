@@ -7,20 +7,20 @@ import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/repository/ship_repository.dart';
 import 'package:galaxy_defender/core/bloc/ship/ship_bloc.dart';
+import 'package:galaxy_defender/ui/app/overlays/pause_button_overlay.dart';
 import 'package:galaxy_defender/ui/game/components/ships/color_ship.dart';
 import 'package:galaxy_defender/ui/game/components/status_text.dart';
 
 class GalaxyGame extends FlameGame
     with HasKeyboardHandlerComponents, HasGameReference, HasCollisionDetection {
-  final ShipRepository shipRepository;
-  GalaxyGame({required this.shipRepository});
+  GalaxyGame();
   @override
   Future<void> onLoad() async {
     await add(
       FlameMultiBlocProvider(
         providers: [
           FlameBlocProvider<ShipBloc, ShipState>(
-            create: () => ShipBloc(repository: shipRepository),
+            create: () => ShipBloc(repository: ShipRepository()),
           ),
         ],
         children: [
@@ -60,5 +60,11 @@ class GalaxyGame extends FlameGame
       ),
     );
     return super.onLoad();
+  }
+
+  @override
+  void onMount() {
+    overlays.addAll([PauseButtonOverlay.overlayKey]);
+    super.onMount();
   }
 }
