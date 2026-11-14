@@ -1,7 +1,9 @@
-import 'package:galaxy_defender/data/model/game_state.dart';
+import 'package:galaxy_defender/data/model/game_data.dart';
 import 'package:riverpod/riverpod.dart';
 
-final gameStateProvider = NotifierProvider<GameStateNotifier, GameState>(GameStateNotifier.new);
+final gameStateProvider = NotifierProvider<GameStateNotifier, GameState>(
+  GameStateNotifier.new,
+);
 
 class GameStateNotifier extends Notifier<GameState> {
   @override
@@ -13,7 +15,7 @@ class GameStateNotifier extends Notifier<GameState> {
     state.points++;
   }
 
-  void heal(int life){
+  void heal(int life) {
     state.life += life;
   }
 }
