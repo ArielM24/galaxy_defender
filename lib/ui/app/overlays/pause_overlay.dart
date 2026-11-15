@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
+import 'package:galaxy_defender/ui/app/pages/main_menu_page.dart';
 import 'package:galaxy_defender/ui/widgets/neon_button.dart';
+import 'package:go_router/go_router.dart';
 
 class PauseOverlay extends StatelessWidget {
   static final String overlayKey = "PauseOverlay";
@@ -27,15 +29,20 @@ class PauseOverlay extends StatelessWidget {
             margin: 8,
             color: Colors.redAccent,
             icon: Icons.restore_sharp,
-            onTap: () {},
+            onTap: () {
+              gameStateProvider.restartGame();
+            },
           ),
           NeonButton(
             margin: 8,
             text: "Save and exit",
             icon: Icons.save_as_outlined,
             color: Colors.lightGreenAccent,
-            onTap: () {
-              gameStateProvider.saveGame();
+            onTap: () async {
+              await gameStateProvider.saveGame();
+              if (context.mounted) {
+                context.go(MainMenuPage.route);
+              }
             },
           ),
         ],

@@ -4,7 +4,7 @@ import 'package:galaxy_defender/data/repository/game_repository.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
 
 class GameStateProvider extends ChangeNotifier {
-  final GameStateData state;
+  GameStateData state;
   final bool useLog;
   bool _isSavingGame = false;
   GameStateProvider({required this.state, this.useLog = true});
@@ -36,21 +36,17 @@ class GameStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void saveGame() async {
-    if (!_isSavingGame) {
-      _isSavingGame = true;
-      await GameRepository.saveGameStateData(state);
-    }
-    if (_isSavingGame) {
-      debugPrint("Saving queued");
-    }
-    while (_isSavingGame) {
-      if (!_isSavingGame) {
-        await GameRepository.saveGameStateData(state);
-        _isSavingGame = false;
-      }
-    }
+  Future<void> saveGame() async {
+    _isSavingGame = true;
+    await GameRepository.saveGameStateData(state);
+    _isSavingGame = false;
     log("SaveGame");
+  }
+
+  void restartGame() {
+    state = GameStateData();
+    log("restartGame");
+    notifyListeners();
   }
 
   void log(String calledFrom) {

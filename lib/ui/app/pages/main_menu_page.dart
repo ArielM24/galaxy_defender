@@ -5,6 +5,7 @@ import 'package:galaxy_defender/ui/widgets/neon_button.dart';
 import 'package:galaxy_defender/ui/widgets/neon_text.dart';
 import 'package:galaxy_defender/ui/widgets/space_background.dart';
 import 'package:go_router/go_router.dart';
+import 'package:icons_flutter/icons_flutter.dart';
 
 class MainMenuPage extends StatelessWidget {
   static const route = "/";
@@ -19,9 +20,13 @@ class MainMenuPage extends StatelessWidget {
         child: Center(
           child: Column(
             children: [
-              NeonText(text: "Galaxy Defender"),
+              NeonText(text: "Galaxy Defender", icon: RpgAwesome.blaster),
               NeonButton(
-                text: "Defend the galaxy",
+                text: "  Defend the galaxy",
+                //icon: RpgAwesome.bolt_shield,
+                icon: FlutterIcons.space_shuttle_faw5s,
+                //icon: FlutterIcons.galactic_senate_faw5d,
+                //icon: AntDesign.rocket1,
                 color: Colors.lightGreenAccent,
                 onTap: () {
                   context.go(GamePage.route);

@@ -125,6 +125,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "18.1.4"
+  icons_flutter:
+    dependency: "direct main"
+    description:
+      name: icons_flutter
+      sha256: "455a7d108db06929fde1aaaf2ea5a0b7db4631d067bb98415f300c89a540585a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   intl:
     dependency: transitive
     description:

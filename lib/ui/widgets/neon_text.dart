@@ -4,10 +4,12 @@ class NeonText extends StatelessWidget {
   final String text;
   final double margin;
   final Color color;
+  final IconData? icon;
   const NeonText({
     required this.text,
     super.key,
     this.margin = 32,
+    this.icon,
     this.color = Colors.cyanAccent,
   });
 
@@ -33,18 +35,24 @@ class NeonText extends StatelessWidget {
           ),
         ],
       ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: color,
-          fontSize: 18,
-          fontFamily: 'Audiowide',
-          shadows: [
-            Shadow(color: color, blurRadius: 10),
-            Shadow(color: color, blurRadius: 20),
-            Shadow(color: color, blurRadius: 40),
-          ],
-        ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) Icon(icon, color: color),
+          Text(
+            text,
+            style: TextStyle(
+              color: color,
+              fontSize: 18,
+              fontFamily: 'Audiowide',
+              shadows: [
+                Shadow(color: color, blurRadius: 10),
+                Shadow(color: color, blurRadius: 20),
+                Shadow(color: color, blurRadius: 40),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
