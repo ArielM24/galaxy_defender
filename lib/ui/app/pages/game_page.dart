@@ -6,23 +6,35 @@ import 'package:galaxy_defender/ui/app/overlays/pause_overlay.dart';
 import 'package:galaxy_defender/ui/game/galaxy_game.dart';
 import 'package:galaxy_defender/ui/widgets/space_background.dart';
 
-class GamePage extends StatelessWidget {
+class GamePage extends StatefulWidget {
   static final String route = "/game";
   final GameStateProvider gameStateProvider;
 
   const GamePage({super.key, required this.gameStateProvider});
 
   @override
+  State<GamePage> createState() => _GamePageState();
+}
+
+class _GamePageState extends State<GamePage> {
+  late GalaxyGame game;
+  @override
+  void initState() {
+    game = GalaxyGame(gameStateProvider: widget.gameStateProvider);
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Center(
       child: GameWidget(
-        game: GalaxyGame(gameStateProvider: gameStateProvider),
+        game: game,
         backgroundBuilder: (context) => SpaceBackground(),
         overlayBuilderMap: {
           PauseOverlay.overlayKey: (context, game) =>
-              PauseOverlay(gameStateProvider: gameStateProvider),
+              PauseOverlay(gameStateProvider: widget.gameStateProvider),
           PauseButtonOverlay.overlayKey: (context, game) =>
-              PauseButtonOverlay(gameStateProvider: gameStateProvider),
+              PauseButtonOverlay(gameStateProvider: widget.gameStateProvider),
         },
       ),
     );

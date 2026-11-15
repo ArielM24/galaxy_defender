@@ -6,102 +6,85 @@ import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:galaxy_defender/data/model/ship_data.dart';
 
-class ColorShip extends PositionComponent
+class ShipComponent extends PositionComponent
     with KeyboardHandler, CollisionCallbacks {
-  double radius;
-  Color color;
-  int arrows;
-  double rotationDuration;
-  double glowingDuration;
-  double speed;
-  bool hasController;
-  bool isEnemy;
-  String faction;
+  ShipData data;
 
   Vector2 _direction = Vector2.zero();
-  ColorShip({
-    this.isEnemy = false,
-    this.hasController = false,
-    this.radius = 16,
-    this.color = Colors.blue,
-    super.position,
-    this.arrows = 2,
-    this.rotationDuration = 8,
-    this.glowingDuration = 4,
-    this.speed = 50,
-    this.faction = "",
-  });
+  ShipComponent({required this.data});
 
   @override
   FutureOr<void> onLoad() {
     // outer glow
+    position = Vector2(data.x, data.y);
     anchor = Anchor.center;
-    size = Vector2(radius * 2, radius * 2);
-    add(CircleHitbox(radius: radius));
+    size = Vector2(data.radius * 2, data.radius * 2);
+    add(CircleHitbox(radius: data.radius));
     CircleComponent layer1 = CircleComponent(
-      radius: radius,
+      radius: data.radius,
       position: position,
     );
     layer1.anchor = Anchor.center;
-    layer1.paint = Paint()..color = color;
-    layer1.position = Vector2(radius, radius);
+    layer1.paint = Paint()..color = Color(data.shipColor);
+    layer1.position = Vector2(data.radius, data.radius);
     layer1.add(
       GlowEffect(
         32,
-        EffectController(duration: glowingDuration, infinite: true),
+        EffectController(duration: data.glowingDuration, infinite: true),
         style: BlurStyle.outer,
       ),
     );
     add(layer1);
     CircleComponent layer3 = CircleComponent(
-      radius: radius,
+      radius: data.radius,
       position: position,
     );
     layer3.anchor = Anchor.center;
     layer3.paint = Paint()
-      ..color = color
+      ..color = Color(data.shipColor)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    layer3.position = Vector2(radius, radius);
+    layer3.position = Vector2(data.radius, data.radius);
     layer3.add(
       GlowEffect(
         4,
-        EffectController(duration: glowingDuration, infinite: true),
+        EffectController(duration: data.glowingDuration, infinite: true),
         style: BlurStyle.inner,
       ),
     );
     add(layer3);
     // core
     CircleComponent layer2 = CircleComponent(
-      radius: radius / 2,
+      radius: data.radius / 2,
       position: position,
     );
     layer2.anchor = Anchor.center;
     layer2.paint = Paint()
-      ..color = color
+      ..color = Color(data.shipColor)
       ..style = PaintingStyle.stroke;
-    layer2.position = Vector2(radius, radius);
+    layer2.position = Vector2(data.radius, data.radius);
     layer2.add(
       GlowEffect(
         1,
-        EffectController(duration: glowingDuration, infinite: true),
+        EffectController(duration: data.glowingDuration, infinite: true),
         style: BlurStyle.solid,
       ),
     );
     add(layer2);
     CircleComponent layer4 = CircleComponent(
-      radius: (radius / 2) * 0.95,
+      radius: (data.radius / 2) * 0.95,
       position: position,
     );
     layer4.anchor = Anchor.center;
-    layer4.paint = Paint()..color = color;
-    layer4.position = Vector2(radius, radius);
+    layer4.paint = Paint()..color = data.color;
+    layer4.position = Vector2(data.radius, data.radius);
     layer4.add(
       GlowEffect(
         4,
         EffectController(
-          duration: glowingDuration,
+          duration: data.glowingDuration,
           infinite: true,
           alternate: true,
         ),
@@ -111,20 +94,20 @@ class ColorShip extends PositionComponent
     add(layer4);
 
     // arrows, min 2
-    final gap = radius * 0.3; // 0.2~0.5
-    final orbitR = radius + gap;
+    final gap = data.radius * 0.3; // 0.2~0.5
+    final orbitR = data.radius + gap;
 
-    final cx = radius;
-    final cy = radius;
-    for (int i = 0; i < arrows; i++) {
-      final angle = i * 2 * pi / arrows;
+    final cx = data.radius;
+    final cy = data.radius;
+    for (int i = 0; i < data.arrows; i++) {
+      final angle = i * 2 * pi / data.arrows;
 
       final shield = PolygonComponent(
         [Vector2(0, -1), Vector2(1, 0), Vector2(0, -0.5), Vector2(-1, 0)],
         paint: Paint()
-          ..color = color
+          ..color = data.color
           ..style = PaintingStyle.stroke,
-        scale: Vector2(radius, radius),
+        scale: Vector2(data.radius, data.radius),
         anchor: Anchor.center,
         angle: angle,
         position: Vector2(cx + orbitR * sin(angle), cy - orbitR * cos(angle)),
@@ -134,7 +117,7 @@ class ColorShip extends PositionComponent
         GlowEffect(
           1,
           style: BlurStyle.solid,
-          EffectController(duration: glowingDuration, infinite: true),
+          EffectController(duration: data.glowingDuration, infinite: true),
         ),
       );
       add(shield);
@@ -143,7 +126,7 @@ class ColorShip extends PositionComponent
     add(
       RotateEffect.by(
         pi * 2,
-        EffectController(duration: rotationDuration, infinite: true),
+        EffectController(duration: data.rotationDuration, infinite: true),
       ),
     );
 
@@ -152,7 +135,7 @@ class ColorShip extends PositionComponent
 
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
-    if (hasController) {
+    if (data.hasController) {
       var dx = 0.0;
       var dy = 0.0;
 
@@ -181,20 +164,20 @@ class ColorShip extends PositionComponent
 
   @override
   void update(double dt) {
-    if (_direction != Vector2.zero() && hasController) {
-      position += _direction.normalized() * speed * dt;
+    if (_direction != Vector2.zero() && data.hasController) {
+      position += _direction.normalized() * data.speed * dt;
     }
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if (other is ColorShip) {}
+    if (other is ShipComponent) {}
     super.onCollision(intersectionPoints, other);
   }
 
   @override
   void onCollisionEnd(PositionComponent other) {
-    if (other is ColorShip) {}
+    if (other is ShipComponent) {}
     super.onCollisionEnd(other);
   }
 }

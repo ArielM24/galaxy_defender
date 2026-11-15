@@ -1,18 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/game_state_data.dart';
+import 'package:galaxy_defender/data/model/level_data.dart';
+import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/repository/game_repository.dart';
+import 'package:galaxy_defender/data/repository/level_repository.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
 
 class GameStateProvider extends ChangeNotifier {
   GameStateData state;
   final bool useLog;
   bool _isSavingGame = false;
+  bool _isLoaded = false;
   GameStateProvider({required this.state, this.useLog = true});
 
-  GameStateProvider.initial() : state = GameStateData(), useLog = true;
+  GameStateProvider.initial()
+    : state = GameStateData(levelData: LevelData()),
+      useLog = true {
+    debugPrint("initProvider");
+  }
 
   bool get isPaused => state.gameStatus == GameStatus.paused;
   bool get isRunning => !isPaused;
+  bool get isInitialized => _isLoaded;
+  Iterable<String> get factions => state.levelData.ships.keys;
+  List<ShipData> getShipsByFaction(String faction) {
+    List<ShipData> ships = [];
+    if (state.levelData.ships.containsKey(faction)) {
+      ships = state.levelData.ships[faction]!;
+    }
+    return ships;
+  }
 
   void setLife(int life) {
     state.life = life;
@@ -30,8 +47,10 @@ class GameStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void loadGame() {
-    state.gameStatus = GameStatus.running;
+  Future<void> loadGame() async {
+    if (_isLoaded) return;
+    state = GameStateData(levelData: await LevelRepository.getTestLevelData());
+    _isLoaded = true;
     log("loadGame");
     notifyListeners();
   }
@@ -43,8 +62,8 @@ class GameStateProvider extends ChangeNotifier {
     log("SaveGame");
   }
 
-  void restartGame() {
-    state = GameStateData();
+  void restartGame() async {
+    state = GameStateData(levelData: await LevelRepository.getTestLevelData());
     log("restartGame");
     notifyListeners();
   }
@@ -62,6 +81,7 @@ class GameStateProvider extends ChangeNotifier {
         '│ Life: ${state.life}\n'
         '│ Saving: $_isSavingGame\n'
         '│ Status: ${state.gameStatus.name}\n'
+        '${state.levelData.logString}'
         '└────────────────────────────────',
       );
     }
