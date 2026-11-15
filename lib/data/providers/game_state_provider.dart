@@ -59,13 +59,17 @@ class GameStateProvider extends ChangeNotifier {
     _isSavingGame = true;
     await GameRepository.saveGameStateData(state);
     _isSavingGame = false;
+    _isLoaded = false;
     log("SaveGame");
   }
 
   void restartGame() async {
+    _isLoaded = false;
     state = GameStateData(levelData: await LevelRepository.getTestLevelData());
-    log("restartGame");
     notifyListeners();
+    _isLoaded = true;
+    notifyListeners();
+    log("restartGame");
   }
 
   void log(String calledFrom) {

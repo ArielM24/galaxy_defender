@@ -24,7 +24,7 @@ class ShipData {
     this.currentLife = 100,
     this.maxLife = 100,
     this.attack = 10,
-    this.speed = 10,
+    this.speed = 150,
     this.x = 50,
     this.y = 50,
     this.armour = 2,

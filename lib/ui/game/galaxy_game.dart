@@ -13,24 +13,35 @@ import 'package:galaxy_defender/ui/game/components/ships/ship_component.dart';
 class GalaxyGame extends FlameGame
     with HasKeyboardHandlerComponents, HasGameReference, HasCollisionDetection {
   final GameStateProvider gameStateProvider;
+  final List<ShipComponent> _ships = [];
   GalaxyGame({required this.gameStateProvider});
   @override
   Future<void> onLoad() async {
     debugPrint("onLoad");
+    loadLevel();
+    return super.onLoad();
+  }
+
+  void loadLevel() async {
     if (!gameStateProvider.isInitialized) {
+      clearLevel();
       for (String faction in gameStateProvider.factions) {
         for (ShipData data in gameStateProvider.getShipsByFaction(faction)) {
-          await add(ShipComponent(data: data));
+          _ships.add(ShipComponent(data: data));
         }
       }
     }
-    return super.onLoad();
+    await addAll(_ships);
+  }
+
+  void clearLevel() {
+    removeAll(_ships);
+    _ships.clear();
   }
 
   @override
   void onMount() async {
     debugPrint("onMount");
-
     overlays.addAll([PauseButtonOverlay.overlayKey]);
     gameStateProvider.addListener(_onUpdateState);
     await gameStateProvider.loadGame();
@@ -38,6 +49,9 @@ class GalaxyGame extends FlameGame
   }
 
   void _onUpdateState() {
+    if (!gameStateProvider.isInitialized) {
+      loadLevel();
+    }
     if (gameStateProvider.isRunning) {
       overlays.remove(PauseOverlay.overlayKey);
       resumeEngine();
