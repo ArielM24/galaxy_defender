@@ -81,7 +81,7 @@ class GameStateProvider extends ChangeNotifier {
 
       debugPrint(
         '┌─ GameState [$ts] [CalledFrom: $calledFrom]────────────\n'
-        '│ Points: ${state.points}\n'
+        '│ Points: ${state.score}\n'
         '│ Life: ${state.life}\n'
         '│ Saving: $_isSavingGame\n'
         '│ Status: ${state.gameStatus.name}\n'

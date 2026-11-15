@@ -1,9 +1,20 @@
 import 'package:galaxy_defender/data/model/ship_data.dart';
 
 class LevelData {
+  String sector;
+  String system;
   Map<String, List<ShipData>> ships;
-  double score;
-  LevelData({this.ships = const {}, this.score = 0});
+  Map<String, List<ShipData>> bases;
+  String needsSector;
+  String needsSystem;
+  LevelData({
+    this.ships = const {},
+    this.bases = const {},
+    this.sector = "alpha",
+    this.system = "0x1",
+    this.needsSector = "",
+    this.needsSystem = "",
+  });
 
   bool get gameOver => ships.isEmpty;
 

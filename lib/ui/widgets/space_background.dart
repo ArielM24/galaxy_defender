@@ -6,8 +6,16 @@ import 'package:flutter/scheduler.dart';
 class SpaceBackground extends StatefulWidget {
   final Widget? child;
   final int seed;
+  final int stars;
+  final int nebulae;
 
-  const SpaceBackground({super.key, this.child, this.seed = 42});
+  const SpaceBackground({
+    super.key,
+    this.child,
+    this.seed = 42,
+    this.stars = 120,
+    this.nebulae = 6,
+  });
 
   @override
   State<SpaceBackground> createState() => _SpaceBackgroundState();
@@ -18,16 +26,15 @@ class _SpaceBackgroundState extends State<SpaceBackground> {
   final _timeNotifier = ValueNotifier<double>(0.0);
 
   late final Random _rng;
-  late final List<_Star> _stars = List.generate(120, (_) => _Star.random(_rng));
-  late final List<_Nebula> _nebulae = List.generate(
-    6,
-    (_) => _Nebula.random(_rng),
-  );
+  late final List<_Star> _stars;
+  late final List<_Nebula> _nebulae;
 
   @override
   void initState() {
     super.initState();
     _rng = Random(widget.seed);
+    _stars = List.generate(widget.stars, (_) => _Star.random(_rng));
+    _nebulae = List.generate(widget.nebulae, (_) => _Nebula.random(_rng));
     _ticker = Ticker((elapsed) {
       _timeNotifier.value = DateTime.now().millisecondsSinceEpoch / 1000.0;
     })..start();
@@ -95,6 +102,10 @@ class _Nebula {
       Colors.pinkAccent,
       Colors.teal,
       Colors.indigo,
+      Colors.yellowAccent,
+      Colors.orangeAccent,
+      Colors.lightGreenAccent,
+      Colors.redAccent,
     ];
     return _Nebula(
       rng.nextDouble(),
