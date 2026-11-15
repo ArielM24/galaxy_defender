@@ -9,7 +9,7 @@ class NeonButton extends StatelessWidget {
   const NeonButton({
     this.text = "",
     this.color = Colors.cyanAccent,
-    this.margin = 32,
+    this.margin = 0,
     this.onTap,
     this.icon,
     super.key,
@@ -18,6 +18,7 @@ class NeonButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: EdgeInsets.all(margin),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(10),
         boxShadow: [

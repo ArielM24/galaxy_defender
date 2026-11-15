@@ -1,12 +1,6 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
 
-part 'ship_data.freezed.dart';
-part 'ship_data.g.dart';
-
-@freezed
-@JsonSerializable()
-class ShipData with _$ShipData {
+class ShipData {
   final double currentLife;
   final double maxLife;
   final double speed;
@@ -36,7 +30,4 @@ class ShipData with _$ShipData {
     this.movementType = ShipMovementType.wandering,
     this.type = ShipType.soldier,
   });
-
-  factory ShipData.fromJson(Map<String, dynamic> json) =>
-      _$ShipDataFromJson(json);
 }

@@ -16,3 +16,5 @@ enum ShipFaction {
   final int color;
   const ShipFaction(this.name, this.color);
 }
+
+enum GameStatus { initial, loading, paused, running, gameOver, won }

@@ -4,16 +4,11 @@ import 'dart:math';
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
-import 'package:flame_bloc/flame_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:galaxy_defender/core/bloc/ship/ship_bloc.dart';
 
 class ColorShip extends PositionComponent
-    with
-        KeyboardHandler,
-        CollisionCallbacks,
-        FlameBlocReader<ShipBloc, ShipState> {
+    with KeyboardHandler, CollisionCallbacks {
   double radius;
   Color color;
   int arrows;
@@ -39,7 +34,7 @@ class ColorShip extends PositionComponent
   });
 
   @override
-  Future<void> onLoad() {
+  FutureOr<void> onLoad() {
     // outer glow
     anchor = Anchor.center;
     size = Vector2(radius * 2, radius * 2);
@@ -193,17 +188,13 @@ class ColorShip extends PositionComponent
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if (other is ColorShip) {
-      bloc.add(ShipStartCollidedEvent());
-    }
+    if (other is ColorShip) {}
     super.onCollision(intersectionPoints, other);
   }
 
   @override
   void onCollisionEnd(PositionComponent other) {
-    if (other is ColorShip) {
-      bloc.add(ShipEndColledEvent());
-    }
+    if (other is ColorShip) {}
     super.onCollisionEnd(other);
   }
 }
