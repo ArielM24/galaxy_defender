@@ -1,15 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:ultimate_flutter_icons/flutter_icons.dart';
 
 class NeonText extends StatelessWidget {
   final String text;
   final double margin;
   final Color color;
   final IconData? icon;
+  final FIconObject? ficon;
+  final double? iconSize;
   const NeonText({
     required this.text,
     super.key,
     this.margin = 32,
     this.icon,
+    this.iconSize,
+    this.ficon,
     this.color = Colors.cyanAccent,
   });
 
@@ -38,7 +43,8 @@ class NeonText extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (icon != null) Icon(icon, color: color),
+          if (icon != null) Icon(icon, color: color, size: iconSize),
+          if (ficon != null) FIcon(ficon!, color: color, size: iconSize),
           Text(
             text,
             style: TextStyle(

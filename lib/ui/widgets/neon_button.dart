@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ultimate_flutter_icons/ficon.dart';
 
 class NeonButton extends StatelessWidget {
   final String text;
@@ -6,12 +7,16 @@ class NeonButton extends StatelessWidget {
   final Function? onTap;
   final Color color;
   final IconData? icon;
+  final FIconObject? ficon;
+  final double? iconSize;
   const NeonButton({
     this.text = "",
     this.color = Colors.cyanAccent,
     this.margin = 0,
     this.onTap,
     this.icon,
+    this.ficon,
+    this.iconSize,
     super.key,
   });
 
@@ -51,7 +56,8 @@ class NeonButton extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            if (icon != null) Icon(icon),
+            if (icon != null) Icon(icon, size: iconSize),
+            if (ficon != null) FIcon(ficon!, color: color, size: iconSize),
             Text(
               text,
               style: TextStyle(

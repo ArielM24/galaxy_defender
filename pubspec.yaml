@@ -14,6 +14,7 @@ dependencies:
   flutter_bloc: ^9.1.1
   go_router: ^18.1.4
   icons_flutter: ^1.0.0
+  ultimate_flutter_icons: ^1.4.1
 
 dev_dependencies:
   flutter_test:
