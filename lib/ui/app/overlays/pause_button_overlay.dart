@@ -21,6 +21,7 @@ class PauseButtonOverlay extends StatelessWidget {
             margin: 8,
             icon: icon,
             onTap: () {
+              debugPrint("wtf");
               gameStateProvider.pauseGame();
             },
           );

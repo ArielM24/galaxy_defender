@@ -8,6 +8,7 @@ import 'package:galaxy_defender/ui/app/pages/main_menu_page.dart';
 import 'package:go_router/go_router.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   GameStateProvider gameStateProvider = GameStateProvider(
     state: GameStateData(levelData: await LevelRepository.getTestLevelData()),
   );

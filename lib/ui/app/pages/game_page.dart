@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_button_overlay.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_overlay.dart';
+import 'package:galaxy_defender/ui/app/overlays/system_overlay.dart';
 import 'package:galaxy_defender/ui/game/galaxy_game.dart';
 import 'package:galaxy_defender/ui/widgets/space_background.dart';
 
@@ -35,6 +36,8 @@ class _GamePageState extends State<GamePage> {
               PauseOverlay(gameStateProvider: widget.gameStateProvider),
           PauseButtonOverlay.overlayKey: (context, game) =>
               PauseButtonOverlay(gameStateProvider: widget.gameStateProvider),
+          SystemOverlay.overlayKey: (context, game) =>
+              SystemOverlay(gameStateProvider: widget.gameStateProvider),
         },
       ),
     );

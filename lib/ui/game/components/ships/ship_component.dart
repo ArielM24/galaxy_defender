@@ -7,9 +7,11 @@ import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
+import 'package:galaxy_defender/ui/game/galaxy_game.dart';
+import 'package:galaxy_defender/ui/util/ship_utils.dart';
 
 class ShipComponent extends PositionComponent
-    with KeyboardHandler, CollisionCallbacks {
+    with KeyboardHandler, CollisionCallbacks, HasGameReference<GalaxyGame> {
   ShipData data;
 
   Vector2 _direction = Vector2.zero();
@@ -92,36 +94,7 @@ class ShipComponent extends PositionComponent
       ),
     );
     add(layer4);
-
-    // arrows, min 2
-    final gap = data.radius * 0.3; // 0.2~0.5
-    final orbitR = data.radius + gap;
-
-    final cx = data.radius;
-    final cy = data.radius;
-    for (int i = 0; i < data.arrows; i++) {
-      final angle = i * 2 * pi / data.arrows;
-
-      final shield = PolygonComponent(
-        [Vector2(0, -1), Vector2(1, 0), Vector2(0, -0.5), Vector2(-1, 0)],
-        paint: Paint()
-          ..color = data.color
-          ..style = PaintingStyle.stroke,
-        scale: Vector2(data.radius, data.radius),
-        anchor: Anchor.center,
-        angle: angle,
-        position: Vector2(cx + orbitR * sin(angle), cy - orbitR * cos(angle)),
-      );
-
-      shield.add(
-        GlowEffect(
-          1,
-          style: BlurStyle.solid,
-          EffectController(duration: data.glowingDuration, infinite: true),
-        ),
-      );
-      add(shield);
-    }
+    addAll(ShipUtils.generateShields(data));
 
     add(
       RotateEffect.by(
@@ -162,10 +135,42 @@ class ShipComponent extends PositionComponent
     return true;
   }
 
+  void addController(double dt) {
+    if (_direction != Vector2.zero()) {
+      position += _direction.normalized() * data.speed * dt;
+    }
+  }
+
+  void addMovement(double dt) {
+    position += _direction * dt;
+    final hitX =
+        position.x < game.gameStateProvider.bounds.left ||
+        position.x > game.gameStateProvider.bounds.right;
+    final hitY =
+        position.y < game.gameStateProvider.bounds.top ||
+        position.y > game.gameStateProvider.bounds.bottom;
+    if (hitX || hitY) {
+      // Nueva dirección aleatoria
+      final angle = Random().nextDouble() * 2 * pi;
+      _direction = Vector2(cos(angle), sin(angle)) * data.speed;
+      // Clamp para no salir
+      position.x = position.x.clamp(
+        game.gameStateProvider.bounds.left,
+        game.gameStateProvider.bounds.right,
+      );
+      position.y = position.y.clamp(
+        game.gameStateProvider.bounds.top,
+        game.gameStateProvider.bounds.bottom,
+      );
+    }
+  }
+
   @override
   void update(double dt) {
-    if (_direction != Vector2.zero() && data.hasController) {
-      position += _direction.normalized() * data.speed * dt;
+    if (data.hasController) {
+      addController(dt);
+    } else {
+      addMovement(dt);
     }
   }
 

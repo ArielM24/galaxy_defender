@@ -1,6 +1,10 @@
+import 'dart:math' hide Rectangle;
+
+import 'package:flame/experimental.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/game_state_data.dart';
 import 'package:galaxy_defender/data/model/level_data.dart';
+import 'package:galaxy_defender/data/model/level_generator.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/repository/game_repository.dart';
 import 'package:galaxy_defender/data/repository/level_repository.dart';
@@ -22,11 +26,20 @@ class GameStateProvider extends ChangeNotifier {
   bool get isPaused => state.gameStatus == GameStatus.paused;
   bool get isRunning => !isPaused;
   bool get isInitialized => _isLoaded;
-  Iterable<String> get factions => state.levelData.ships.keys;
+  Iterable<String> get factions => state.ships.keys;
+  LevelGenerator get generator => state.levelData.generator;
+  Rectangle get bounds => Rectangle.fromLTWH(
+    state.levelData.left,
+    state.levelData.top,
+    state.levelData.width,
+    state.levelData.height,
+  );
+
+  String get system => "${state.levelData.sector}:${state.levelData.system}";
   List<ShipData> getShipsByFaction(String faction) {
     List<ShipData> ships = [];
-    if (state.levelData.ships.containsKey(faction)) {
-      ships = state.levelData.ships[faction]!;
+    if (state.ships.containsKey(faction)) {
+      ships = state.ships[faction]!;
     }
     return ships;
   }
@@ -85,9 +98,20 @@ class GameStateProvider extends ChangeNotifier {
         '│ Life: ${state.life}\n'
         '│ Saving: $_isSavingGame\n'
         '│ Status: ${state.gameStatus.name}\n'
-        '${state.levelData.logString}'
+        '$_logShips'
+        '│${state.levelData.toMap()}\n'
         '└────────────────────────────────',
       );
     }
+  }
+
+  String get _logShips {
+    String str = "│ Level data:\n";
+    Iterable<String> factions = state.ships.keys;
+    for (String faction in factions) {
+      int count = state.ships[faction]!.length;
+      str += "│ $faction: $count\n";
+    }
+    return str;
   }
 }

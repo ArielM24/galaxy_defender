@@ -27,7 +27,6 @@ flutter:
     - family: Audiowide
       fonts:
         - asset: assets/fonts/Audiowide-Regular.ttf
-
-assets:
-  assets/fonts/
-  asset/levels/
+  assets:
+    - assets/fonts/
+    - assets/levels/

@@ -1,3 +1,16 @@
 {
-    
+  "sector": "alpha",
+  "system": "0xdebug",
+  "needsSector": "",
+  "needsSystem": "",
+  "generator": {
+    "minSpawners": 2,
+    "maxSpawners": 4,
+    "spawnLimit": 1,
+    "minSpawnerLife": 500,
+    "maxSpawnerLife": 1200,
+    "minSpawnFrecuency": 1.0,
+    "maxSpawnFrecuency": 3.0,
+    "factions": ["emeraldTwilight", "rubyOmega"]
+  }
 }

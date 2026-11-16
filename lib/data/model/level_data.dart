@@ -1,30 +1,72 @@
-import 'package:galaxy_defender/data/model/ship_data.dart';
+import 'package:galaxy_defender/data/model/level_generator.dart';
 
 class LevelData {
   String sector;
   String system;
-  Map<String, List<ShipData>> ships;
-  Map<String, List<ShipData>> bases;
   String needsSector;
   String needsSystem;
+  LevelGenerator generator;
+  double left;
+  double top;
+  double width;
+  double height;
   LevelData({
-    this.ships = const {},
-    this.bases = const {},
     this.sector = "alpha",
     this.system = "0x1",
     this.needsSector = "",
     this.needsSystem = "",
+    this.left = 0,
+    this.top = 0,
+    this.width = 1200,
+    this.height = 800,
+    this.generator = const LevelGenerator(),
   });
 
-  bool get gameOver => ships.isEmpty;
+  Map<String, dynamic> toMap() => {
+    'sector': sector,
+    'system': system,
+    'needsSector': needsSector,
+    'needsSystem': needsSystem,
+    'left': left,
+    'top': top,
+    'width': width,
+    'height': height,
+    'generator': generator.toMap(),
+  };
 
-  String get logString {
-    String str = "│ Level data:\n";
-    Iterable<String> factions = ships.keys;
-    for (String faction in factions) {
-      int count = ships[faction]!.length;
-      str += "│ $faction: $count\n";
-    }
-    return str;
-  }
+  factory LevelData.fromMap(Map<String, dynamic> map) => LevelData(
+    sector: map['sector'] as String? ?? "alpha",
+    system: map['system'] as String? ?? "0x1",
+    left: map['left'] ?? 0.0 as double,
+    top: map['top'] ?? 0.0 as double,
+    width: map['width'] ?? 1200.0 as double,
+    height: map['height'] ?? 800.0 as double,
+    needsSector: map['needsSector'] as String? ?? "",
+    needsSystem: map['needsSystem'] as String? ?? "",
+    generator: map['generator'] != null
+        ? LevelGenerator.fromMap(map['generator'] as Map<String, dynamic>)
+        : const LevelGenerator(),
+  );
+
+  LevelData copyWith({
+    String? sector,
+    String? system,
+    String? needsSector,
+    String? needsSystem,
+    double? left,
+    double? top,
+    double? width,
+    double? height,
+    LevelGenerator? generator,
+  }) => LevelData(
+    sector: sector ?? this.sector,
+    system: system ?? this.system,
+    needsSector: needsSector ?? this.needsSector,
+    needsSystem: needsSystem ?? this.needsSystem,
+    generator: generator ?? this.generator,
+    left: left ?? this.left,
+    top: top ?? this.top,
+    width: width ?? this.width,
+    height: height ?? this.height,
+  );
 }
