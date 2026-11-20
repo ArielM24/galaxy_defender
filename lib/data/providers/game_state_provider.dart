@@ -1,5 +1,3 @@
-import 'dart:math' hide Rectangle;
-
 import 'package:flame/experimental.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/game_state_data.dart';
@@ -35,6 +33,7 @@ class GameStateProvider extends ChangeNotifier {
     state.levelData.width,
     state.levelData.height,
   );
+  int get enemyCount => state.enemyCount;
 
   String get system => "${state.levelData.sector}:${state.levelData.system}";
   List<ShipData> getShipsByFaction(String faction) {
@@ -104,6 +103,21 @@ class GameStateProvider extends ChangeNotifier {
         '└────────────────────────────────',
       );
     }
+  }
+
+  void enemyAdded() {
+    state.enemyCount++;
+    notifyListeners();
+  }
+
+  void enemyRemoved() {
+    state.enemyCount--;
+    notifyListeners();
+  }
+
+  void enemiesCleared() {
+    state.enemyCount = 0;
+    notifyListeners();
   }
 
   String get _logShips {

@@ -9,6 +9,7 @@ class GameStateData {
   String levelName;
   LevelData levelData;
   Map<String, List<ShipData>> ships;
+  int enemyCount;
 
   GameStateData({
     this.score = 0,
@@ -16,6 +17,7 @@ class GameStateData {
     this.levelName = "debug",
     this.gameStatus = GameStatus.running,
     required this.levelData,
+    this.enemyCount = 0,
     this.ships = const {},
   });
 }

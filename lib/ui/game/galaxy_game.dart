@@ -1,7 +1,5 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
@@ -11,12 +9,13 @@ import 'package:galaxy_defender/data/providers/game_state_provider.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_button_overlay.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_overlay.dart';
 import 'package:galaxy_defender/ui/app/overlays/system_overlay.dart';
+import 'package:galaxy_defender/ui/game/components/map/mini_map_component.dart';
 import 'package:galaxy_defender/ui/game/components/ships/ship_component.dart';
 
 class GalaxyGame extends FlameGame
     with HasKeyboardHandlerComponents, HasGameReference, HasCollisionDetection {
   final GameStateProvider gameStateProvider;
-  late CameraComponent miniMapCamera;
+  late MiniMapComponent miniMapCamera;
   GalaxyGame({required this.gameStateProvider});
   @override
   Future<void> onLoad() async {
@@ -26,69 +25,10 @@ class GalaxyGame extends FlameGame
     camera.viewfinder.anchor = Anchor.center;
     camera.setBounds(gameStateProvider.bounds);
     camera.viewport.position = Vector2.all(0);
-
-    //mini map
-    miniMapCamera = CameraComponent(
+    miniMapCamera = MiniMapComponent(
       world: world,
-      viewport: FixedSizeViewport(150, 150),
+      gameStateProvider: gameStateProvider,
     );
-    miniMapCamera.viewfinder.zoom = 0.05;
-    miniMapCamera.viewport.anchor = Anchor.topLeft;
-
-    //miniMapCamera.moveTo(Vector2(0, 200));
-    miniMapCamera.viewport.add(
-      RectangleComponent(
-        position: Vector2.zero(),
-        size: Vector2.all(150),
-        anchor: Anchor.topLeft,
-        paint: Paint()
-          ..color = Colors.cyanAccent.withAlpha(50)
-          ..style = PaintingStyle.fill
-          ..strokeWidth = 2,
-      ),
-    );
-
-    // Glow exterior (más difuso, más transparente)
-    miniMapCamera.viewport.add(
-      RectangleComponent(
-        position: Vector2.zero(),
-        size: Vector2.all(150),
-        anchor: Anchor.topLeft,
-        paint: Paint()
-          ..color = Colors.cyanAccent.withValues(alpha: 0.4)
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 4
-          ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 8),
-      ),
-    );
-
-    // Glow interior (más definido)
-    miniMapCamera.viewport.add(
-      RectangleComponent(
-        position: Vector2.zero(),
-        size: Vector2.all(150),
-        anchor: Anchor.topLeft,
-        paint: Paint()
-          ..color = Colors.cyanAccent
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2
-          ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 3),
-      ),
-    );
-
-    // Borde nítido encima
-    miniMapCamera.viewport.add(
-      RectangleComponent(
-        position: Vector2.zero(),
-        size: Vector2.all(150),
-        anchor: Anchor.topLeft,
-        paint: Paint()
-          ..color = Colors.cyanAccent
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = 2,
-      ),
-    );
-
     add(world);
     add(camera);
     add(miniMapCamera);
@@ -108,6 +48,7 @@ class GalaxyGame extends FlameGame
       (component) => component.key.toString().startsWith("player"),
     );
     world.removeAll(world.children.query<ShipComponent>());
+    gameStateProvider.enemiesCleared();
   }
 
   @override
@@ -169,8 +110,10 @@ class GalaxyGame extends FlameGame
         spawnCount: gameStateProvider.generator.spawnLimit,
         selfPositioning: true,
         autoStart: true,
-        factory: (i) =>
-            ShipComponent(data: gameStateProvider.generator.generate()),
+        factory: (i) {
+          gameStateProvider.enemyAdded();
+          return ShipComponent(data: gameStateProvider.generator.generate());
+        },
       );
       world.add(spawner);
     }
