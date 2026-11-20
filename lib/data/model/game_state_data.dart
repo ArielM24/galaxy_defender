@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:galaxy_defender/data/model/level_data.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/util/enums.dart';

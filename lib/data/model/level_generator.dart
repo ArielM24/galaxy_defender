@@ -78,16 +78,18 @@ class LevelGenerator {
     height: height ?? this.height,
   );
 
-  int get spawnersNumber => Random().nextIntBetween(minSpawners, maxSpawners);
+  int spawnersNumber({Random? rng}) {
+    return (rng ?? Random()).nextIntBetween(minSpawners, maxSpawners);
+  }
 
-  ShipData generate({double? x, double? y}) {
-    ShipFaction shipFaction = ShipFaction.values.byName(factions.random());
+  ShipData generate({double? x, double? y, Random? rng}) {
+    ShipFaction shipFaction = ShipFaction.values.byName(factions.random(rng));
     return ShipData(
       faction: shipFaction,
       shipColor: shipFaction.color,
       hasController: false,
-      x: x ?? Random().nextDouble() * width,
-      y: y ?? Random().nextDouble() * height,
+      x: x ?? (rng ?? Random()).nextDouble() * width,
+      y: y ?? (rng ?? Random()).nextDouble() * height,
     );
   }
 }

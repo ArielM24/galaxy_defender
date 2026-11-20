@@ -150,7 +150,7 @@ class ShipComponent extends PositionComponent
         position.y > game.gameStateProvider.bounds.bottom;
     if (hitX || hitY) {
       // Nueva dirección aleatoria
-      final angle = Random().nextDouble() * 2 * pi;
+      final angle = game.gameStateProvider.rng.nextDouble() * 2 * pi;
       _direction = Vector2(cos(angle), sin(angle)) * data.speed;
       // Clamp para no salir
       position.x = position.x.clamp(

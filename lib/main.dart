@@ -27,7 +27,8 @@ void main() async {
       ),
       GoRoute(
         path: GalacticMapPage.route,
-        builder: (context, state) => GalacticMapPage(),
+        builder: (context, state) =>
+            GalacticMapPage(gameStateProvider: gameStateProvider),
       ),
     ],
   );

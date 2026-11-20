@@ -6,7 +6,7 @@ import 'package:galaxy_defender/ui/app/overlays/pause_overlay.dart';
 import 'package:galaxy_defender/ui/app/overlays/system_overlay.dart';
 import 'package:galaxy_defender/ui/game/galaxy_game.dart';
 import 'package:galaxy_defender/ui/widgets/neon_text.dart';
-import 'package:galaxy_defender/ui/widgets/space_background.dart';
+import 'package:galaxy_defender/ui/widgets/background/space_background.dart';
 import 'package:ultimate_flutter_icons/icons/gi.dart';
 
 class GamePage extends StatefulWidget {
@@ -42,9 +42,11 @@ class _GamePageState extends State<GamePage> {
           animation: widget.gameStateProvider.parallaxOffset,
           builder: (context, child) => SpaceBackground(
             parallaxOffset: widget.gameStateProvider.parallaxOffset.value,
+            rng: widget.gameStateProvider.rng,
           ),
         ),
         loadingBuilder: (context) => SpaceBackground(
+          rng: widget.gameStateProvider.rng,
           child: Material(
             color: Colors.transparent,
             child: Center(

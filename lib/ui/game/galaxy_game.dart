@@ -54,7 +54,7 @@ class GalaxyGame extends FlameGame
 
   @override
   void onMount() async {
-    overlays.addAll([PauseButtonOverlay.overlayKey, SystemOverlay.overlayKey]);
+    overlays.addAll([PauseButtonOverlay.overlayKey]);
     super.onMount();
   }
 
@@ -103,8 +103,16 @@ class GalaxyGame extends FlameGame
   }
 
   Future<void> addSpawners() async {
-    for (int i = 0; i < gameStateProvider.generator.spawnersNumber; i++) {
+    for (
+      int i = 0;
+      i <
+          gameStateProvider.generator.spawnersNumber(
+            rng: gameStateProvider.rng,
+          );
+      i++
+    ) {
       SpawnComponent spawner = SpawnComponent.periodRange(
+        random: gameStateProvider.rng,
         minPeriod: gameStateProvider.generator.minSpawnFrecuency,
         maxPeriod: gameStateProvider.generator.maxSpawnFrecuency,
         spawnCount: gameStateProvider.generator.spawnLimit,
@@ -112,7 +120,11 @@ class GalaxyGame extends FlameGame
         autoStart: true,
         factory: (i) {
           gameStateProvider.enemyAdded();
-          return ShipComponent(data: gameStateProvider.generator.generate());
+          return ShipComponent(
+            data: gameStateProvider.generator.generate(
+              rng: gameStateProvider.rng,
+            ),
+          );
         },
       );
       await world.add(spawner);

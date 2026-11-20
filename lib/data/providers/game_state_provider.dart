@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/experimental.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/game_state_data.dart';
@@ -12,7 +14,6 @@ class GameStateProvider extends ChangeNotifier {
   GameStateData state;
   final bool useLog;
   bool _isSavingGame = false;
-  bool _isLoaded = false;
   final parallaxOffset = ValueNotifier<Offset>(Offset.zero);
   GameStateProvider({required this.state, this.useLog = true});
 
@@ -24,7 +25,6 @@ class GameStateProvider extends ChangeNotifier {
 
   bool get isPaused => state.gameStatus == GameStatus.paused;
   bool get isRunning => !isPaused;
-  bool get isInitialized => _isLoaded;
   Iterable<String> get factions => state.ships.keys;
   LevelGenerator get generator => state.levelData.generator;
   Rectangle get bounds => Rectangle.fromLTWH(
@@ -34,8 +34,10 @@ class GameStateProvider extends ChangeNotifier {
     state.levelData.height,
   );
   int get enemyCount => state.enemyCount;
+  Random get rng => state.levelData.rng;
 
-  String get system => "${state.levelData.sector}:${state.levelData.system}";
+  String get levelInfo =>
+      "Galactic Sector: ${state.levelData.sector}\nStelar System: ${state.levelData.system}\nSeed: ${state.levelData.seed}";
   List<ShipData> getShipsByFaction(String faction) {
     List<ShipData> ships = [];
     if (state.ships.containsKey(faction)) {
@@ -70,17 +72,7 @@ class GameStateProvider extends ChangeNotifier {
     _isSavingGame = true;
     await GameRepository.saveGameStateData(state);
     _isSavingGame = false;
-    _isLoaded = false;
     log("SaveGame");
-  }
-
-  void restartGame() async {
-    _isLoaded = false;
-    state = GameStateData(levelData: await LevelRepository.getTestLevelData());
-    notifyListeners();
-    _isLoaded = true;
-    notifyListeners();
-    log("restartGame");
   }
 
   void log(String calledFrom) {

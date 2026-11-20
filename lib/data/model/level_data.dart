@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:galaxy_defender/data/model/level_generator.dart';
 
 class LevelData {
@@ -11,6 +13,9 @@ class LevelData {
   double width;
   double height;
   bool hasPlayer;
+  int seed;
+  Random rng;
+
   LevelData({
     this.sector = "alpha",
     this.system = "0x1",
@@ -21,8 +26,10 @@ class LevelData {
     this.width = 2400,
     this.height = 1600,
     this.hasPlayer = true,
+    this.seed = 1234,
+
     this.generator = const LevelGenerator(),
-  });
+  }) : rng = Random(seed);
 
   Map<String, dynamic> toMap() => {
     'sector': sector,
@@ -34,6 +41,7 @@ class LevelData {
     'width': width,
     'height': height,
     'hasPlayer': hasPlayer,
+    'seed': seed,
     'generator': generator.toMap(),
   };
 
@@ -44,6 +52,7 @@ class LevelData {
     top: map['top'] ?? 0.0,
     width: map['width'] ?? 2400.0,
     height: map['height'] ?? 1600.0,
+    seed: map['seed'] ?? 1234,
     needsSector: map['needsSector'] as String? ?? "",
     needsSystem: map['needsSystem'] as String? ?? "",
     hasPlayer: map['hasPlayer'] as bool? ?? true,
@@ -62,6 +71,7 @@ class LevelData {
     double? width,
     double? height,
     bool? hasPlayer,
+    int? seed,
     LevelGenerator? generator,
   }) => LevelData(
     sector: sector ?? this.sector,
@@ -74,5 +84,6 @@ class LevelData {
     width: width ?? this.width,
     hasPlayer: hasPlayer ?? this.hasPlayer,
     height: height ?? this.height,
+    seed: seed ?? this.seed,
   );
 }

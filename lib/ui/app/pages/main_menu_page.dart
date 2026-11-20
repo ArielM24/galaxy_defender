@@ -4,7 +4,7 @@ import 'package:galaxy_defender/ui/app/pages/galactic_map_page.dart';
 import 'package:galaxy_defender/ui/app/pages/game_page.dart';
 import 'package:galaxy_defender/ui/widgets/neon_button.dart';
 import 'package:galaxy_defender/ui/widgets/neon_text.dart';
-import 'package:galaxy_defender/ui/widgets/space_background.dart';
+import 'package:galaxy_defender/ui/widgets/background/space_background.dart';
 import 'package:go_router/go_router.dart';
 import 'package:icons_flutter/icons_flutter.dart';
 import 'package:ultimate_flutter_icons/flutter_icons.dart';
@@ -18,7 +18,6 @@ class MainMenuPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SpaceBackground(
-        seed: 34534531414,
         nebulae: 12,
         child: Center(
           child: Column(

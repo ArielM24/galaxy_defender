@@ -17,7 +17,7 @@ class SystemOverlay extends StatelessWidget {
           child: ListenableBuilder(
             listenable: gameStateProvider,
             builder: (context, child) {
-              return NeonText(text: gameStateProvider.system, margin: 8);
+              return NeonText(text: gameStateProvider.levelInfo, margin: 8);
             },
           ),
         ),
