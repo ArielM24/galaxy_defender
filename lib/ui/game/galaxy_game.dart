@@ -6,6 +6,7 @@ import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
+import 'package:galaxy_defender/data/util/enums.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_button_overlay.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_overlay.dart';
 import 'package:galaxy_defender/ui/app/overlays/system_overlay.dart';
@@ -19,6 +20,8 @@ class GalaxyGame extends FlameGame
   GalaxyGame({required this.gameStateProvider});
   @override
   Future<void> onLoad() async {
+    await gameStateProvider.loadGameState();
+    gameStateProvider.addListener(_onUpdateState);
     world = World();
     // main camera
     camera = CameraComponent(world: world);
@@ -32,15 +35,13 @@ class GalaxyGame extends FlameGame
     add(world);
     add(camera);
     add(miniMapCamera);
-    loadLevel();
+    await setGameStateFromProvider();
     return super.onLoad();
   }
 
-  void loadLevel() async {
-    if (!gameStateProvider.isInitialized) {
-      clearLevel();
-      populateLevel();
-    }
+  Future<void> setGameStateFromProvider() async {
+    clearLevel();
+    await populateLevel();
   }
 
   void clearLevel() {
@@ -53,11 +54,7 @@ class GalaxyGame extends FlameGame
 
   @override
   void onMount() async {
-    debugPrint("onMount");
     overlays.addAll([PauseButtonOverlay.overlayKey, SystemOverlay.overlayKey]);
-    gameStateProvider.addListener(_onUpdateState);
-    await gameStateProvider.loadGame();
-    await populateLevel();
     super.onMount();
   }
 
@@ -76,10 +73,6 @@ class GalaxyGame extends FlameGame
   }
 
   void _onUpdateState() {
-    updateParallax();
-    if (!gameStateProvider.isInitialized) {
-      loadLevel();
-    }
     if (gameStateProvider.isRunning) {
       overlays.remove(PauseOverlay.overlayKey);
       resumeEngine();
@@ -89,20 +82,27 @@ class GalaxyGame extends FlameGame
     }
   }
 
-  void addPlayer() {
+  Future<void> addPlayer() async {
     if (gameStateProvider.state.levelData.hasPlayer &&
         findByKeyName("player") == null) {
       ShipComponent player = ShipComponent(
         key: ComponentKey.named("player"),
-        data: ShipData(hasController: true, x: 500, y: 500),
+        data: ShipData(
+          hasController: true,
+          x: 500,
+          y: 500,
+          shipColor: ShipFaction.galaxyFreedom.color,
+          faction: ShipFaction.galaxyFreedom,
+          arrows: 3,
+        ),
       );
-      world.add(player);
+      await world.add(player);
       camera.follow(player);
       miniMapCamera.follow(player);
     }
   }
 
-  void addSpawners() {
+  Future<void> addSpawners() async {
     for (int i = 0; i < gameStateProvider.generator.spawnersNumber; i++) {
       SpawnComponent spawner = SpawnComponent.periodRange(
         minPeriod: gameStateProvider.generator.minSpawnFrecuency,
@@ -115,12 +115,12 @@ class GalaxyGame extends FlameGame
           return ShipComponent(data: gameStateProvider.generator.generate());
         },
       );
-      world.add(spawner);
+      await world.add(spawner);
     }
   }
 
   Future<void> populateLevel() async {
     addPlayer();
-    addSpawners();
+    await addSpawners();
   }
 }

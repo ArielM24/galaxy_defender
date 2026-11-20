@@ -11,6 +11,6 @@
     "maxSpawnerLife": 1200,
     "minSpawnFrecuency": 1.0,
     "maxSpawnFrecuency": 5.0,
-    "factions": ["emeraldTwilight", "rubyOmega"]
+    "factions": ["emeraldTwilight", "rubyOmega", "sapphireDommination"]
   }
 }

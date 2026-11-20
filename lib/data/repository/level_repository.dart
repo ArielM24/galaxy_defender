@@ -5,6 +5,7 @@ import 'package:galaxy_defender/data/model/level_data.dart';
 
 class LevelRepository {
   static Future<LevelData> getTestLevelData() async {
+    await Future.delayed(Duration(milliseconds: 800));
     return await loadLevel("assets/levels/debug_level1.json");
   }
 

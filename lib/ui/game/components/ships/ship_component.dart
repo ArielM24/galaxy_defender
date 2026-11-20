@@ -25,76 +25,72 @@ class ShipComponent extends PositionComponent
     anchor = Anchor.center;
     size = Vector2(data.radius * 2, data.radius * 2);
     add(CircleHitbox(radius: data.radius));
-    CircleComponent layer1 = CircleComponent(
+    CircleComponent outterGlow = CircleComponent(
       radius: data.radius,
       position: position,
     );
-    layer1.anchor = Anchor.center;
-    layer1.paint = Paint()..color = Color(data.shipColor);
-    layer1.position = Vector2(data.radius, data.radius);
-    layer1.add(
+    outterGlow.anchor = Anchor.center;
+    outterGlow.paint = Paint()..color = Color(data.shipColor);
+    outterGlow.position = Vector2(data.radius, data.radius);
+    outterGlow.add(
       GlowEffect(
         32,
         EffectController(duration: data.glowingDuration, infinite: true),
         style: BlurStyle.outer,
       ),
     );
-    add(layer1);
-    CircleComponent layer3 = CircleComponent(
+    add(outterGlow);
+    CircleComponent outterCircle = CircleComponent(
       radius: data.radius,
       position: position,
     );
-    layer3.anchor = Anchor.center;
-    layer3.paint = Paint()
+    outterCircle.anchor = Anchor.center;
+    outterCircle.paint = Paint()
       ..color = Color(data.shipColor)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
-    layer3.position = Vector2(data.radius, data.radius);
-    layer3.add(
+    outterCircle.position = Vector2(data.radius, data.radius);
+    outterCircle.add(
       GlowEffect(
         4,
         EffectController(duration: data.glowingDuration, infinite: true),
         style: BlurStyle.inner,
       ),
     );
-    add(layer3);
+    add(outterCircle);
     // core
-    CircleComponent layer2 = CircleComponent(
+    CircleComponent coreCircle = CircleComponent(
       radius: data.radius / 2,
       position: position,
     );
-    layer2.anchor = Anchor.center;
-    layer2.paint = Paint()
+    coreCircle.anchor = Anchor.center;
+    coreCircle.paint = Paint()
       ..color = Color(data.shipColor)
       ..style = PaintingStyle.stroke;
-    layer2.position = Vector2(data.radius, data.radius);
-    layer2.add(
+    coreCircle.position = Vector2(data.radius, data.radius);
+    coreCircle.add(
       GlowEffect(
         1,
         EffectController(duration: data.glowingDuration, infinite: true),
         style: BlurStyle.solid,
       ),
     );
-    add(layer2);
-    CircleComponent layer4 = CircleComponent(
+    add(coreCircle);
+    CircleComponent coreGlow = CircleComponent(
       radius: (data.radius / 2) * 0.95,
       position: position,
     );
-    layer4.anchor = Anchor.center;
-    layer4.paint = Paint()..color = data.color;
-    layer4.position = Vector2(data.radius, data.radius);
-    layer4.add(
+    coreGlow.anchor = Anchor.center;
+    coreGlow.paint = Paint()..color = data.color;
+    coreGlow.position = Vector2(data.radius, data.radius);
+    coreGlow.add(
       GlowEffect(
-        4,
-        EffectController(
-          duration: data.glowingDuration,
-          infinite: true,
-          alternate: true,
-        ),
+        1,
+        EffectController(duration: data.glowingDuration, infinite: true),
         style: BlurStyle.inner,
       ),
     );
-    add(layer4);
+    //add(coreGlow);
     addAll(ShipUtils.generateShields(data));
 
     add(

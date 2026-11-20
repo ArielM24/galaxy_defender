@@ -60,10 +60,8 @@ class GameStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> loadGame() async {
-    if (_isLoaded) return;
+  Future<void> loadGameState() async {
     state = GameStateData(levelData: await LevelRepository.getTestLevelData());
-    _isLoaded = true;
     log("loadGame");
     notifyListeners();
   }

@@ -51,7 +51,7 @@ class TrailComponent extends PositionComponent {
         4.0 * t,
         Paint()
           ..color = color.withValues(alpha: 0.8 * t)
-          ..blendMode = BlendMode.plus,
+          ..blendMode = BlendMode.srcOver,
       );
     }
     canvas.restore();
