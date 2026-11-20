@@ -18,7 +18,7 @@ class MainMenuPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: SpaceBackground(
-        nebulae: 12,
+        nebulae: 6,
         child: Center(
           child: Column(
             children: [

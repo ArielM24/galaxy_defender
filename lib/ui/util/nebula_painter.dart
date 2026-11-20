@@ -28,12 +28,10 @@ class NebulaPainter extends CustomPainter {
       y = y % size.height;
       if (y < 0) y += size.height;
 
-      // Dibujar la nebulosa + copias en bordes adyacentes
       for (final dx in [-size.width, 0.0, size.width]) {
         for (final dy in [-size.height, 0.0, size.height]) {
           final center = Offset(x + dx, y + dy);
 
-          // Culling: solo dibujar si intersecta el viewport
           if (center.dx + n.radius < 0 || center.dx - n.radius > size.width) {
             continue;
           }
@@ -41,16 +39,34 @@ class NebulaPainter extends CustomPainter {
             continue;
           }
 
-          final shader = RadialGradient(
-            colors: [
-              n.color.withValues(alpha: opacity),
-              n.color.withValues(alpha: opacity * 0.5),
-              Colors.transparent,
-            ],
-            stops: const [0.0, 0.4, 1.0],
-          ).createShader(Rect.fromCircle(center: center, radius: n.radius));
+          // Dibujar cada blob con su propio color
+          for (final blob in n.blobs) {
+            final blobCenter = center + blob.offset;
+            final blobRadius = blob.radius;
 
-          canvas.drawCircle(center, n.radius, Paint()..shader = shader);
+            if (blobCenter.dx + blobRadius < 0 ||
+                blobCenter.dx - blobRadius > size.width) {
+              continue;
+            }
+            if (blobCenter.dy + blobRadius < 0 ||
+                blobCenter.dy - blobRadius > size.height) {
+              continue;
+            }
+
+            final shader =
+                RadialGradient(
+                  colors: [
+                    blob.color.withValues(alpha: opacity),
+                    blob.color.withValues(alpha: opacity * 0.4),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.5, 1.0],
+                ).createShader(
+                  Rect.fromCircle(center: blobCenter, radius: blobRadius),
+                );
+
+            canvas.drawCircle(blobCenter, blobRadius, Paint()..shader = shader);
+          }
         }
       }
     }
