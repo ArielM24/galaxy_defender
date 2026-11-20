@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
@@ -31,7 +32,7 @@ class GalaxyGame extends FlameGame
       world: world,
       viewport: FixedSizeViewport(150, 150),
     );
-    miniMapCamera.viewfinder.zoom = 0.1;
+    miniMapCamera.viewfinder.zoom = 0.05;
     miniMapCamera.viewport.anchor = Anchor.topLeft;
 
     //miniMapCamera.moveTo(Vector2(0, 200));
@@ -147,7 +148,7 @@ class GalaxyGame extends FlameGame
     }
   }
 
-  Future<void> populateLevel() async {
+  void addPlayer() {
     if (gameStateProvider.state.levelData.hasPlayer &&
         findByKeyName("player") == null) {
       ShipComponent player = ShipComponent(
@@ -158,16 +159,25 @@ class GalaxyGame extends FlameGame
       camera.follow(player);
       miniMapCamera.follow(player);
     }
+  }
+
+  void addSpawners() {
     for (int i = 0; i < gameStateProvider.generator.spawnersNumber; i++) {
       SpawnComponent spawner = SpawnComponent.periodRange(
         minPeriod: gameStateProvider.generator.minSpawnFrecuency,
-        maxPeriod: gameStateProvider.generator.minSpawnFrecuency,
+        maxPeriod: gameStateProvider.generator.maxSpawnFrecuency,
         spawnCount: gameStateProvider.generator.spawnLimit,
+        selfPositioning: true,
         autoStart: true,
         factory: (i) =>
             ShipComponent(data: gameStateProvider.generator.generate()),
       );
       world.add(spawner);
     }
+  }
+
+  Future<void> populateLevel() async {
+    addPlayer();
+    addSpawners();
   }
 }

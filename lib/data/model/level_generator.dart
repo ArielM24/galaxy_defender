@@ -13,6 +13,8 @@ class LevelGenerator {
   final double minSpawnFrecuency;
   final double maxSpawnFrecuency;
   final List<String> factions;
+  final double width;
+  final double height;
   const LevelGenerator({
     this.minSpawners = 1,
     this.maxSpawners = 3,
@@ -21,6 +23,8 @@ class LevelGenerator {
     this.minSpawnerLife = 500,
     this.minSpawnFrecuency = 1,
     this.maxSpawnFrecuency = 5,
+    this.width = 2400,
+    this.height = 1600,
     this.factions = const [],
   });
 
@@ -32,6 +36,8 @@ class LevelGenerator {
     'minSpawnFrecuency': minSpawnFrecuency,
     'maxSpawnFrecuency': maxSpawnFrecuency,
     'factions': factions,
+    'width': width,
+    'height': height,
     'spawnLimit': spawnLimit,
   };
 
@@ -41,6 +47,8 @@ class LevelGenerator {
     spawnLimit: map['spawnLimit'] as int? ?? 5,
     minSpawnerLife: map['minSpawnerLife'] as int? ?? 500,
     maxSpawnerLife: map['maxSpawnerLife'] as int? ?? 1000,
+    width: map['width'] ?? 2400.0,
+    height: map['height'] ?? 1600.0,
     minSpawnFrecuency: map['minSpawnFrecuency'] as double? ?? 1.0,
     maxSpawnFrecuency: map['maxSpawnFrecuency'] as double? ?? 5.0,
     factions: (map['factions'] as List<dynamic>?)?.cast<String>() ?? const [],
@@ -54,6 +62,8 @@ class LevelGenerator {
     int? spawnLimit,
     double? minSpawnFrecuency,
     double? maxSpawnFrecuency,
+    double? width,
+    double? height,
     List<String>? factions,
   }) => LevelGenerator(
     minSpawners: minSpawners ?? this.minSpawners,
@@ -64,16 +74,20 @@ class LevelGenerator {
     minSpawnFrecuency: minSpawnFrecuency ?? this.minSpawnFrecuency,
     maxSpawnFrecuency: maxSpawnFrecuency ?? this.maxSpawnFrecuency,
     factions: factions ?? this.factions,
+    width: width ?? this.width,
+    height: height ?? this.height,
   );
 
   int get spawnersNumber => Random().nextIntBetween(minSpawners, maxSpawners);
 
-  ShipData generate() {
+  ShipData generate({double? x, double? y}) {
     ShipFaction shipFaction = ShipFaction.values.byName(factions.random());
     return ShipData(
       faction: shipFaction,
       shipColor: shipFaction.color,
       hasController: false,
+      x: x ?? Random().nextDouble() * width,
+      y: y ?? Random().nextDouble() * height,
     );
   }
 }

@@ -60,7 +60,11 @@ class _SpaceBackgroundState extends State<SpaceBackground> {
             const ColoredBox(color: Colors.black),
             CustomPaint(
               size: Size.infinite,
-              painter: _NebulaPainter(nebulae: _nebulae, t: t),
+              painter: _NebulaPainter(
+                nebulae: _nebulae,
+                t: t,
+                parallaxOffset: widget.parallaxOffset,
+              ),
             ),
             CustomPaint(
               size: Size.infinite,
@@ -166,8 +170,13 @@ class _StarPainter extends CustomPainter {
 class _NebulaPainter extends CustomPainter {
   final List<_Nebula> nebulae;
   final double t;
+  final Offset parallaxOffset;
 
-  _NebulaPainter({required this.nebulae, required this.t});
+  _NebulaPainter({
+    required this.nebulae,
+    required this.t,
+    this.parallaxOffset = Offset.zero,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -175,21 +184,43 @@ class _NebulaPainter extends CustomPainter {
       final angle = (n.speed * t * 2 * pi + n.phase) % (2 * pi);
       final opacity = 0.15 + 0.2 * (0.5 + 0.5 * sin(angle));
 
-      final center = Offset(n.x * size.width, n.y * size.height);
+      var x = n.x * size.width - parallaxOffset.dx;
+      var y = n.y * size.height - parallaxOffset.dy;
 
-      final shader = RadialGradient(
-        colors: [
-          n.color.withValues(alpha: opacity),
-          n.color.withValues(alpha: opacity * 0.5),
-          Colors.transparent,
-        ],
-        stops: const [0.0, 0.4, 1.0],
-      ).createShader(Rect.fromCircle(center: center, radius: n.radius));
+      x = x % size.width;
+      if (x < 0) x += size.width;
+      y = y % size.height;
+      if (y < 0) y += size.height;
 
-      canvas.drawCircle(center, n.radius, Paint()..shader = shader);
+      // Dibujar la nebulosa + copias en bordes adyacentes
+      for (final dx in [-size.width, 0.0, size.width]) {
+        for (final dy in [-size.height, 0.0, size.height]) {
+          final center = Offset(x + dx, y + dy);
+
+          // Culling: solo dibujar si intersecta el viewport
+          if (center.dx + n.radius < 0 || center.dx - n.radius > size.width) {
+            continue;
+          }
+          if (center.dy + n.radius < 0 || center.dy - n.radius > size.height) {
+            continue;
+          }
+
+          final shader = RadialGradient(
+            colors: [
+              n.color.withValues(alpha: opacity),
+              n.color.withValues(alpha: opacity * 0.5),
+              Colors.transparent,
+            ],
+            stops: const [0.0, 0.4, 1.0],
+          ).createShader(Rect.fromCircle(center: center, radius: n.radius));
+
+          canvas.drawCircle(center, n.radius, Paint()..shader = shader);
+        }
+      }
     }
   }
 
   @override
-  bool shouldRepaint(_NebulaPainter old) => old.t != t;
+  bool shouldRepaint(_NebulaPainter old) =>
+      old.t != t || old.parallaxOffset != parallaxOffset;
 }
