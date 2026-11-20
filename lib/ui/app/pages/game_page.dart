@@ -30,7 +30,12 @@ class _GamePageState extends State<GamePage> {
     return Center(
       child: GameWidget(
         game: game,
-        backgroundBuilder: (context) => SpaceBackground(),
+        backgroundBuilder: (context) => AnimatedBuilder(
+          animation: widget.gameStateProvider.parallaxOffset,
+          builder: (context, child) => SpaceBackground(
+            parallaxOffset: widget.gameStateProvider.parallaxOffset.value,
+          ),
+        ),
         overlayBuilderMap: {
           PauseOverlay.overlayKey: (context, game) =>
               PauseOverlay(gameStateProvider: widget.gameStateProvider),

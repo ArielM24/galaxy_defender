@@ -7,6 +7,7 @@ import 'package:flame/effects.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
+import 'package:galaxy_defender/ui/game/components/ships/trail_component.dart';
 import 'package:galaxy_defender/ui/game/galaxy_game.dart';
 import 'package:galaxy_defender/ui/util/ship_utils.dart';
 
@@ -15,7 +16,7 @@ class ShipComponent extends PositionComponent
   ShipData data;
 
   Vector2 _direction = Vector2.zero();
-  ShipComponent({required this.data});
+  ShipComponent({required this.data, super.key});
 
   @override
   FutureOr<void> onLoad() {
@@ -102,6 +103,8 @@ class ShipComponent extends PositionComponent
         EffectController(duration: data.rotationDuration, infinite: true),
       ),
     );
+
+    add(TrailComponent(target: this, color: data.color));
 
     return super.onLoad();
   }

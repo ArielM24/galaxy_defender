@@ -10,6 +10,7 @@ class LevelData {
   double top;
   double width;
   double height;
+  bool hasPlayer;
   LevelData({
     this.sector = "alpha",
     this.system = "0x1",
@@ -17,8 +18,9 @@ class LevelData {
     this.needsSystem = "",
     this.left = 0,
     this.top = 0,
-    this.width = 1200,
-    this.height = 800,
+    this.width = 2400,
+    this.height = 1600,
+    this.hasPlayer = true,
     this.generator = const LevelGenerator(),
   });
 
@@ -31,18 +33,20 @@ class LevelData {
     'top': top,
     'width': width,
     'height': height,
+    'hasPlayer': hasPlayer,
     'generator': generator.toMap(),
   };
 
   factory LevelData.fromMap(Map<String, dynamic> map) => LevelData(
     sector: map['sector'] as String? ?? "alpha",
     system: map['system'] as String? ?? "0x1",
-    left: map['left'] ?? 0.0 as double,
-    top: map['top'] ?? 0.0 as double,
-    width: map['width'] ?? 1200.0 as double,
-    height: map['height'] ?? 800.0 as double,
+    left: map['left'] ?? 0.0,
+    top: map['top'] ?? 0.0,
+    width: map['width'] ?? 2400.0,
+    height: map['height'] ?? 1600.0,
     needsSector: map['needsSector'] as String? ?? "",
     needsSystem: map['needsSystem'] as String? ?? "",
+    hasPlayer: map['hasPlayer'] as bool? ?? true,
     generator: map['generator'] != null
         ? LevelGenerator.fromMap(map['generator'] as Map<String, dynamic>)
         : const LevelGenerator(),
@@ -57,6 +61,7 @@ class LevelData {
     double? top,
     double? width,
     double? height,
+    bool? hasPlayer,
     LevelGenerator? generator,
   }) => LevelData(
     sector: sector ?? this.sector,
@@ -67,6 +72,7 @@ class LevelData {
     left: left ?? this.left,
     top: top ?? this.top,
     width: width ?? this.width,
+    hasPlayer: hasPlayer ?? this.hasPlayer,
     height: height ?? this.height,
   );
 }

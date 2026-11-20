@@ -15,6 +15,7 @@ class GameStateProvider extends ChangeNotifier {
   final bool useLog;
   bool _isSavingGame = false;
   bool _isLoaded = false;
+  final parallaxOffset = ValueNotifier<Offset>(Offset.zero);
   GameStateProvider({required this.state, this.useLog = true});
 
   GameStateProvider.initial()

@@ -8,6 +8,7 @@ class SpaceBackground extends StatefulWidget {
   final int seed;
   final int stars;
   final int nebulae;
+  final Offset parallaxOffset;
 
   const SpaceBackground({
     super.key,
@@ -15,6 +16,7 @@ class SpaceBackground extends StatefulWidget {
     this.seed = 42,
     this.stars = 120,
     this.nebulae = 6,
+    this.parallaxOffset = Offset.zero,
   });
 
   @override
@@ -62,7 +64,11 @@ class _SpaceBackgroundState extends State<SpaceBackground> {
             ),
             CustomPaint(
               size: Size.infinite,
-              painter: _StarPainter(stars: _stars, t: t),
+              painter: _StarPainter(
+                stars: _stars,
+                t: t,
+                parallaxOffset: widget.parallaxOffset,
+              ),
             ),
             ?widget.child,
           ],
@@ -123,8 +129,13 @@ class _Nebula {
 class _StarPainter extends CustomPainter {
   final List<_Star> stars;
   final double t;
+  final Offset parallaxOffset;
 
-  _StarPainter({required this.stars, required this.t});
+  _StarPainter({
+    required this.stars,
+    required this.t,
+    this.parallaxOffset = Offset.zero,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -135,14 +146,21 @@ class _StarPainter extends CustomPainter {
       final paint = Paint()
         ..color = Color.fromARGB((opacity * 255).toInt(), 255, 255, 255)
         ..strokeWidth = star.size;
+      var x = star.x * size.width - parallaxOffset.dx;
+      var y = star.y * size.height - parallaxOffset.dy;
 
-      final pos = Offset(star.x * size.width, star.y * size.height);
-      canvas.drawCircle(pos, star.size / 2, paint);
+      x = x % size.width;
+      if (x < 0) x += size.width;
+      y = y % size.height;
+      if (y < 0) y += size.height;
+
+      canvas.drawCircle(Offset(x, y), star.size / 2, paint);
     }
   }
 
   @override
-  bool shouldRepaint(_StarPainter old) => old.t != t;
+  bool shouldRepaint(_StarPainter old) =>
+      old.t != t || old.parallaxOffset != parallaxOffset;
 }
 
 class _NebulaPainter extends CustomPainter {
