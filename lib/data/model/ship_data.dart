@@ -1,9 +1,12 @@
 import 'dart:math';
 
 import 'package:flame/extensions.dart';
+import 'package:galaxy_defender/data/util/key_generator.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
 
 class ShipData {
+  static final String keyPrefix = "ship_";
+
   double currentLife;
   double maxLife;
   double speed;
@@ -33,9 +36,11 @@ class ShipData {
   double rateOfFire;
   double projectileSpeed;
   bool hasInmunity;
+  String key;
 
   ShipData({
     this.currentLife = 0,
+    this.key = "",
     this.maxLife = 100,
     this.attack = 10,
     this.speed = 150,
@@ -67,6 +72,9 @@ class ShipData {
        separationFactor = 1.0 {
     if (currentLife == 0) {
       currentLife = maxLife;
+    }
+    if (key.isEmpty) {
+      key = KeyGenerator.generate(prefix: keyPrefix);
     }
   }
 

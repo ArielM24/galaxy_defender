@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
-import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/projectile_data.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
@@ -122,12 +122,17 @@ class GalaxyGame extends FlameGame
           shipColor: ShipFaction.galaxyFreedom.color,
           faction: ShipFaction.galaxyFreedom,
           arrows: 3,
-          shieldType: ShieldType.xShape,
+          shieldType: ShieldType.chevron,
           maxLife: 1000,
           hasInmunity: true,
         ),
       );
       await world.add(player);
+      gameStateProvider.shipAdded(
+        key: player.data.key,
+        faction: player.data.faction,
+        enemy: false,
+      );
       gameStateProvider.setLife(player.data.currentLife);
       camera.follow(player);
       _miniMapCamera.follow(player);
@@ -148,12 +153,16 @@ class GalaxyGame extends FlameGame
         selfPositioning: true,
         autoStart: true,
         factory: (i) {
-          gameStateProvider.enemyAdded();
-          return ShipComponent(
+          ShipComponent ship = ShipComponent(
             data: gameStateProvider.generator.generate(
               rng: gameStateProvider.rng,
             ),
           );
+          gameStateProvider.shipAdded(
+            faction: ship.data.faction,
+            key: ship.data.key,
+          );
+          return ship;
         },
       );
       await world.add(spawner);

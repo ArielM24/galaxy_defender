@@ -8,10 +8,8 @@ import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:galaxy_defender/data/model/projectile_data.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
-import 'package:galaxy_defender/ui/game/components/projectile_componen.dart';
 import 'package:galaxy_defender/ui/game/components/ships/trail_component.dart';
 import 'package:galaxy_defender/ui/game/galaxy_game.dart';
 import 'package:galaxy_defender/ui/util/ship_utils.dart';
@@ -196,14 +194,14 @@ class ShipComponent extends PositionComponent
       return _clampPosition(p);
     }
 
-    final toPlayer = game.gameStateProvider.state.playerPosition - position;
-    final dist = toPlayer.length;
+    final toTarget = game.gameStateProvider.state.playerPosition - position;
+    final dist = toTarget.length;
 
     // goes directly to player
     if (data.type == ShipType.kamikaze &&
         (dist <= data.detectRadius || data.targetPlayer)) {
       data.targetPlayer = true;
-      _currentDirection = toPlayer / dist;
+      _currentDirection = toTarget / dist;
     }
 
     // follows player at some distance
@@ -211,9 +209,9 @@ class ShipComponent extends PositionComponent
         (dist <= data.detectRadius || data.targetPlayer)) {
       data.targetPlayer = true;
       if (dist > data.maintainDistance) {
-        _currentDirection = toPlayer / dist; // retroceder
+        _currentDirection = toTarget / dist; // retroceder
       } else {
-        final orbitDir = Vector2(-toPlayer.y / dist, toPlayer.x / dist);
+        final orbitDir = Vector2(-toTarget.y / dist, toTarget.x / dist);
         Vector2 p = normilizeDirection(orbitDir, dt);
         p += _separation() * (data.speed * dt * 5);
         return _clampPosition(p);
@@ -311,7 +309,7 @@ class ShipComponent extends PositionComponent
         (other.key == ComponentKey.named("player"))) {
       removeFromParent();
       game.gameStateProvider.damagePlayer(data.attack);
-      game.gameStateProvider.enemyRemoved();
+      game.gameStateProvider.shipRemoved(faction: data.faction, key: data.key);
     }
     super.onCollision(intersectionPoints, other);
   }

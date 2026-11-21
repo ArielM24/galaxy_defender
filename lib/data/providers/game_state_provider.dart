@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/game_state_data.dart';
 import 'package:galaxy_defender/data/model/level_data.dart';
 import 'package:galaxy_defender/data/model/level_generator.dart';
-import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/repository/game_repository.dart';
 import 'package:galaxy_defender/data/repository/level_repository.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
@@ -29,7 +28,7 @@ class GameStateProvider extends ChangeNotifier {
 
   bool get isPaused => state.gameStatus == GameStatus.paused;
   bool get isRunning => !isPaused;
-  Iterable<String> get factions => state.ships.keys;
+  Iterable<ShipFaction> get factions => state.shipKeys.keys;
   LevelGenerator get generator => state.levelData.generator;
   Rectangle get bounds => Rectangle.fromLTWH(
     state.levelData.left,
@@ -42,13 +41,6 @@ class GameStateProvider extends ChangeNotifier {
 
   String get levelInfo =>
       "Galactic Sector: ${state.levelData.sector}\nStelar System: ${state.levelData.system}\nSeed: ${state.levelData.seed}";
-  List<ShipData> getShipsByFaction(String faction) {
-    List<ShipData> ships = [];
-    if (state.ships.containsKey(faction)) {
-      ships = state.ships[faction]!;
-    }
-    return ships;
-  }
 
   void setLife(double life) {
     state.life = life;
@@ -107,18 +99,35 @@ class GameStateProvider extends ChangeNotifier {
     }
   }
 
-  void enemyAdded() {
+  void shipAdded({
+    required String key,
+    required ShipFaction faction,
+    bool enemy = true,
+  }) {
+    if (state.shipKeys.containsKey(faction)) {
+      state.shipKeys[faction]!.add(key);
+    } else {
+      state.shipKeys[faction] = [key];
+    }
     state.enemyCount++;
     notifyListeners();
   }
 
-  void enemyRemoved() {
-    state.enemyCount--;
-    notifyListeners();
+  void shipRemoved({
+    required String key,
+    required ShipFaction faction,
+    bool enemy = true,
+  }) {
+    bool removed = state.shipKeys[faction]?.remove(key) ?? false;
+    if (removed) {
+      state.enemyCount--;
+      notifyListeners();
+    }
   }
 
   void enemiesCleared() {
     state.enemyCount = 0;
+    state.shipKeys = {};
     notifyListeners();
   }
 
@@ -129,9 +138,9 @@ class GameStateProvider extends ChangeNotifier {
 
   String get _logShips {
     String str = "│ Level data:\n";
-    Iterable<String> factions = state.ships.keys;
-    for (String faction in factions) {
-      int count = state.ships[faction]!.length;
+    Iterable<ShipFaction> factions = state.shipKeys.keys;
+    for (ShipFaction faction in factions) {
+      int count = state.shipKeys[faction]!.length;
       str += "│ $faction: $count\n";
     }
     return str;

@@ -1,6 +1,5 @@
 import 'package:flame/extensions.dart';
 import 'package:galaxy_defender/data/model/level_data.dart';
-import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
 
 class GameStateData {
@@ -9,7 +8,7 @@ class GameStateData {
   GameStatus gameStatus;
   String levelName;
   LevelData levelData;
-  Map<String, List<ShipData>> ships;
+  Map<ShipFaction, List<String>> shipKeys;
   int enemyCount;
   Vector2 playerPosition;
 
@@ -21,6 +20,6 @@ class GameStateData {
     required this.levelData,
     this.enemyCount = 0,
     required this.playerPosition,
-    this.ships = const {},
+    this.shipKeys = const {},
   });
 }
