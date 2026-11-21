@@ -58,8 +58,48 @@ class ShipUtils {
         return pentagonVertices;
       case ShieldType.star4:
         return star4Vertices;
+      case ShieldType.cross:
+        return crossVertices;
+      case ShieldType.shield:
+        return shieldVertices;
+      case ShieldType.chevron:
+        return chevronVertices;
+      case ShieldType.tshape:
+        return tShapeVertices;
+      case ShieldType.bullet:
+        return bulletVertices;
+      case ShieldType.doubleBullet:
+        return doubleBulletVertices;
+      case ShieldType.bow:
+        return bowVertices;
+      case ShieldType.xShape:
+        return xShapeVertices;
     }
   }
+
+  static List<Vector2> xShapeVertices = [
+    Vector2(1, -1), // punta arriba-derecha
+    Vector2(0, -0.3), // interior arriba
+    Vector2(-1, -1), // punta arriba-izquierda
+    Vector2(-0.3, 0), // interior izquierda
+    Vector2(-1, 1), // punta abajo-izquierda
+    Vector2(0, 0.3), // interior abajo
+    Vector2(1, 1), // punta abajo-derecha
+    Vector2(0.3, 0), // interior derecha
+  ];
+
+  static List<Vector2> bowVertices = [
+    Vector2(-1, -0.7), // ala izquierda, exterior arriba
+    Vector2(-0.15, -0.1), // ala izquierda, interior arriba
+    Vector2(0, -0.3), // nudo, arriba
+    Vector2(0.15, -0.1), // ala derecha, interior arriba
+    Vector2(1, -0.7), // ala derecha, exterior arriba
+    Vector2(1, 0.7), // ala derecha, exterior abajo
+    Vector2(0.15, 0.1), // ala derecha, interior abajo
+    Vector2(0, 0.3), // nudo, abajo
+    Vector2(-0.15, 0.1), // ala izquierda, interior abajo
+    Vector2(-1, 0.7), // ala izquierda, exterior abajo
+  ];
 
   static List<Vector2> arrowVertices = [
     Vector2(0, -1),
@@ -130,5 +170,62 @@ class ShipUtils {
     Vector2(-0.25, 0.25),
     Vector2(-0.7, 0),
     Vector2(-0.25, -0.25),
+  ];
+
+  static List<Vector2> crossVertices = [
+    Vector2(0.3, -1),
+    Vector2(0.3, -0.3),
+    Vector2(1, -0.3),
+    Vector2(1, 0.3),
+    Vector2(0.3, 0.3),
+    Vector2(0.3, 1),
+    Vector2(-0.3, 1),
+    Vector2(-0.3, 0.3),
+    Vector2(-1, 0.3),
+    Vector2(-1, -0.3),
+    Vector2(-0.3, -0.3),
+    Vector2(-0.3, -1),
+  ];
+  static List<Vector2> shieldVertices = [
+    Vector2(-0.7, -1),
+    Vector2(0.7, -1),
+    Vector2(0.7, 0.3),
+    Vector2(0, 1),
+    Vector2(-0.7, 0.3),
+  ];
+
+  static List<Vector2> chevronVertices = [
+    Vector2(-1, -1),
+    Vector2(0, 0.3),
+    Vector2(1, -1),
+    Vector2(1, -0.4),
+    Vector2(0, 0.9),
+    Vector2(-1, -0.4),
+  ];
+
+  static List<Vector2> tShapeVertices = [
+    Vector2(-1, -1),
+    Vector2(1, -1),
+    Vector2(1, -0.5),
+    Vector2(0.3, -0.5),
+    Vector2(0.3, 1),
+    Vector2(-0.3, 1),
+    Vector2(-0.3, -0.5),
+    Vector2(-1, -0.5),
+  ];
+  static List<Vector2> bulletVertices = [
+    Vector2(1, 0),
+    Vector2(0.4, -0.5),
+    Vector2(-0.8, -0.5),
+    Vector2(-0.8, 0.5),
+    Vector2(0.4, 0.5),
+  ];
+  static List<Vector2> doubleBulletVertices = [
+    Vector2(1, 0),
+    Vector2(0.3, -0.5),
+    Vector2(-0.3, -0.5),
+    Vector2(-1, 0),
+    Vector2(-0.3, 0.5),
+    Vector2(0.3, 0.5),
   ];
 }

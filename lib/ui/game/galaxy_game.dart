@@ -107,6 +107,7 @@ class GalaxyGame extends FlameGame
           shipColor: ShipFaction.galaxyFreedom.color,
           faction: ShipFaction.galaxyFreedom,
           arrows: 3,
+          shieldType: ShieldType.xShape,
         ),
       );
       await world.add(player);

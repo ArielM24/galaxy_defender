@@ -34,4 +34,12 @@ enum ShieldType {
   elongatedTriangle,
   pentagon,
   star4,
+  cross,
+  shield,
+  chevron,
+  tshape,
+  bullet,
+  doubleBullet,
+  bow,
+  xShape,
 }
