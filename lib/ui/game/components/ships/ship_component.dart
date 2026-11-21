@@ -194,7 +194,10 @@ class ShipComponent extends PositionComponent
       if (dist > data.maintainDistance) {
         _currentDirection = toPlayer.normalized(); // retroceder
       } else {
-        return normilizeDirection(Vector2(0, 0), dt);
+        final orbitDir = Vector2(-toPlayer.y / dist, toPlayer.x / dist);
+        Vector2 p = normilizeDirection(orbitDir, dt);
+        p += _separation() * (data.speed * dt * 2);
+        return p;
       }
     }
 
@@ -205,7 +208,34 @@ class ShipComponent extends PositionComponent
       }
     }
 
-    return normilizeDirection(_currentDirection, dt);
+    Vector2 p = normilizeDirection(_currentDirection, dt);
+
+    p += _separation() * (data.speed * dt * 2);
+
+    return p;
+  }
+
+  Vector2 _separation() {
+    var separationRadius = data.radius * 1.5;
+    var force = Vector2.zero();
+    final myPos = position;
+
+    for (final other in game.world.children.whereType<ShipComponent>()) {
+      if (other == this) continue;
+
+      // Culling rápido (evita sqrt si no está cerca)
+      final dx = myPos.x - other.position.x;
+      final dy = myPos.y - other.position.y;
+      if (dx * dx + dy * dy > separationRadius * separationRadius) continue;
+
+      final dist = sqrt(dx * dx + dy * dy);
+      if (dist > 0.001) {
+        force +=
+            Vector2(dx / dist, dy / dist) * (1.0 - dist / separationRadius);
+      }
+    }
+
+    return force;
   }
 
   Vector2 normilizeDirection(Vector2 direction, double dt) {
