@@ -108,9 +108,11 @@ class GalaxyGame extends FlameGame
           faction: ShipFaction.galaxyFreedom,
           arrows: 3,
           shieldType: ShieldType.xShape,
+          maxLife: 1000,
         ),
       );
       await world.add(player);
+      gameStateProvider.setLife(player.data.currentLife);
       camera.follow(player);
       _miniMapCamera.follow(player);
     }

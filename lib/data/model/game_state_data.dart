@@ -15,7 +15,7 @@ class GameStateData {
 
   GameStateData({
     this.score = 0,
-    this.life = 100.0,
+    this.life = 100,
     this.levelName = "debug",
     this.gameStatus = GameStatus.running,
     required this.levelData,

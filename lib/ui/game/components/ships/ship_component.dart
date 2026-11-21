@@ -182,7 +182,7 @@ class ShipComponent extends PositionComponent
     }
 
     // static
-    if (data.type == ShipType.base || data.type == ShipType.miner) {
+    if (data.type == ShipType.fabricator || data.type == ShipType.miner) {
       return position;
     }
 

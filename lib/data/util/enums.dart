@@ -1,4 +1,12 @@
-enum ShipType { player, base, miner, explorer, soldier, fabricator, kamikaze }
+enum ShipType {
+  player,
+  miner,
+  explorer,
+  soldier,
+  fabricator,
+  kamikaze,
+  //  transport,
+}
 
 enum ShipAttackType { projectile, lasser, area, proximity }
 

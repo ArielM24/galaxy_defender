@@ -32,7 +32,7 @@ class ShipData {
   double separationFactor;
 
   ShipData({
-    this.currentLife = 100,
+    this.currentLife = 0,
     this.maxLife = 100,
     this.attack = 10,
     this.speed = 150,
@@ -58,7 +58,11 @@ class ShipData {
     this.maxSeparationFactor = 2.5,
     this.minSeparationFactor = 0.5,
   }) : color = Color(shipColor),
-       separationFactor = 1.0;
+       separationFactor = 1.0 {
+    if (currentLife == 0) {
+      currentLife = maxLife;
+    }
+  }
 
   ShipData copyWith({
     double? currentLife,
