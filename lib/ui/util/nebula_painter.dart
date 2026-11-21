@@ -32,12 +32,9 @@ class NebulaPainter extends CustomPainter {
         for (final dy in [-size.height, 0.0, size.height]) {
           final center = Offset(x + dx, y + dy);
 
-          if (center.dx + n.radius < 0 || center.dx - n.radius > size.width) {
-            continue;
-          }
-          if (center.dy + n.radius < 0 || center.dy - n.radius > size.height) {
-            continue;
-          }
+          final cull = n.cullRadius;
+          if (center.dx + cull < 0 || center.dx - cull > size.width) continue;
+          if (center.dy + cull < 0 || center.dy - cull > size.height) continue;
 
           // Dibujar cada blob con su propio color
           for (final blob in n.blobs) {
@@ -56,8 +53,8 @@ class NebulaPainter extends CustomPainter {
             final shader =
                 RadialGradient(
                   colors: [
-                    blob.color.withValues(alpha: opacity),
-                    blob.color.withValues(alpha: opacity * 0.4),
+                    blob.color.withValues(alpha: opacity * 0.3),
+                    blob.color.withValues(alpha: opacity * 0.1),
                     Colors.transparent,
                   ],
                   stops: const [0.0, 0.5, 1.0],

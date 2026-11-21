@@ -90,6 +90,9 @@ class LevelGenerator {
       hasController: false,
       x: x ?? (rng ?? Random()).nextDouble() * width,
       y: y ?? (rng ?? Random()).nextDouble() * height,
+      arrows: (rng ?? Random()).nextIntBetween(2, 9),
+      radius: (rng ?? Random()).nextIntBetween(8, 64) * 1.0,
+      shieldType: ShieldType.values.random(rng),
     );
   }
 }

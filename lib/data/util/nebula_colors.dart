@@ -29,4 +29,51 @@ class NebulaColors {
     if (r < 0.92) return NebulaColors.planetaryGreen;
     return NebulaColors.planetaryPurple;
   }
+
+  static List<Color> emeraldPalete() {
+    return [NebulaColors.emissionGreen, NebulaColors.planetaryGreen];
+  }
+
+  static List<Color> rubbyPalete() {
+    return [NebulaColors.emissionRed, NebulaColors.emissionPink];
+  }
+
+  static List<Color> sapphirePalete() {
+    return [NebulaColors.reflectionBlue, NebulaColors.emissionCyan];
+  }
+
+  static List<Color> randomPalete({Random? rng, int maxColors = 1}) {
+    List<Color> palette = [];
+    for (int i = 0; i < maxColors; i++) {
+      palette.add(pickNebulaColor(rng: rng));
+    }
+    return palette;
+  }
+
+  // Al generar blobs, asigna colores que sean físicamente coherentes:
+  static List<Color> coherentPalette(Random rng) {
+    final r = rng.nextDouble();
+    if (r < 0.4) {
+      // Nebulosa de emisión clásica (Hα dominante)
+      return [
+        NebulaColors.emissionRed,
+        NebulaColors.emissionPink,
+        NebulaColors.emissionOrange,
+      ];
+    } else if (r < 0.7) {
+      // Planetaria (O III dominante)
+      return [
+        NebulaColors.emissionGreen,
+        NebulaColors.emissionCyan,
+        NebulaColors.planetaryGreen,
+      ];
+    } else {
+      // Mezcla Hubble completa
+      return [
+        NebulaColors.emissionRed,
+        NebulaColors.emissionGreen,
+        NebulaColors.emissionPink,
+      ];
+    }
+  }
 }

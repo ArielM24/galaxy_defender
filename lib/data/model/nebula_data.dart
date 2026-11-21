@@ -22,6 +22,10 @@ class NebulaData {
     final baseRadius = 300.0 + rng.nextDouble() * 200;
     final blobCount = 3 + rng.nextInt(3);
     final blobs = <NebulaBlobData>[];
+    final List<Color> palette = NebulaColors.randomPalete(
+      rng: rng,
+      maxColors: rng.nextInt(3) + 1,
+    );
 
     for (int i = 0; i < blobCount; i++) {
       final angle = rng.nextDouble() * 2 * pi;
@@ -30,7 +34,7 @@ class NebulaData {
         NebulaBlobData(
           Offset(cos(angle) * dist, sin(angle) * dist),
           baseRadius * (0.3 + rng.nextDouble() * 0.5),
-          NebulaColors.pickNebulaColor(rng: rng),
+          palette[rng.nextInt(palette.length)],
         ),
       );
     }
@@ -42,5 +46,15 @@ class NebulaData {
       phase: rng.nextDouble() * 2 * pi,
       blobs: blobs,
     );
+  }
+
+  // En NebulaData, agrega:
+  double get cullRadius {
+    double max = 0;
+    for (final b in blobs) {
+      final extent = b.offset.distance + b.radius;
+      if (extent > max) max = extent;
+    }
+    return max;
   }
 }

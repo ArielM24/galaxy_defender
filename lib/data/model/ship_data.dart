@@ -20,6 +20,7 @@ class ShipData {
   double rotationDuration;
   double glowingDuration;
   bool hasController;
+  ShieldType shieldType;
   ShipData({
     this.currentLife = 100,
     this.maxLife = 100,
@@ -40,6 +41,7 @@ class ShipData {
     this.glowingDuration = 4,
     this.hasController = false,
     this.radius = 16,
+    this.shieldType = ShieldType.arrow,
   });
 
   ShipData copyWith({
@@ -62,6 +64,7 @@ class ShipData {
     double? rotationDuration,
     double? glowingDuration,
     bool? hasController,
+    ShieldType? shieldType,
   }) {
     return ShipData(
       currentLife: currentLife ?? this.currentLife,
@@ -83,6 +86,7 @@ class ShipData {
       rotationDuration: rotationDuration ?? this.rotationDuration,
       glowingDuration: glowingDuration ?? this.glowingDuration,
       hasController: hasController ?? this.hasController,
+      shieldType: shieldType ?? this.shieldType,
     );
   }
 
@@ -107,6 +111,7 @@ class ShipData {
       'rotationDuration': rotationDuration,
       'glowingDuration': glowingDuration,
       'hasController': hasController,
+      'shieldType': shieldType,
     };
   }
 
@@ -118,7 +123,7 @@ class ShipData {
       attack: (map['attack'] as num).toDouble(),
       x: (map['x'] as num).toDouble(),
       y: (map['y'] as num).toDouble(),
-      type: ShipType.values.byName(map['type'] as String),
+      type: ShipType.values.byName(map['type'] ?? "soldier"),
       size: (map['size'] as num).toDouble(),
       armour: (map['armour'] as num).toDouble(),
       movementType: ShipMovementType.values.byName(
@@ -135,6 +140,7 @@ class ShipData {
       rotationDuration: (map['rotationDuration'] as num).toDouble(),
       glowingDuration: (map['glowingDuration'] as num).toDouble(),
       hasController: map['hasController'] as bool,
+      shieldType: ShieldType.values.byName(map["shieldType"] ?? "arrow"),
     );
   }
 
