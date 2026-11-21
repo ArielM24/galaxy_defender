@@ -14,14 +14,26 @@ import 'package:galaxy_defender/ui/app/overlays/pause_overlay.dart';
 import 'package:galaxy_defender/ui/game/components/map/mini_map_component.dart';
 import 'package:galaxy_defender/ui/game/components/projectile_componen.dart';
 import 'package:galaxy_defender/ui/game/components/ships/ship_component.dart';
-import 'package:galaxy_defender/ui/util/spatial_hash.dart';
+import 'package:galaxy_defender/data/util/spatial_hash.dart';
 
 class GalaxyGame extends FlameGame
     with HasKeyboardHandlerComponents, HasGameReference, HasCollisionDetection {
   final GameStateProvider gameStateProvider;
   final SettingsProvider settingsProvider;
   late MiniMapComponent _miniMapCamera;
-  final SpatialHash spatialHash = SpatialHash(50);
+  final SpatialHash shipsSpatialHash = SpatialHash(50);
+  final Map<ShipFaction, SpatialHash> factionSpatialHashes = {
+    ShipFaction.amethyst: SpatialHash(50),
+    ShipFaction.aquamarine: SpatialHash(50),
+    ShipFaction.citrine: SpatialHash(50),
+    ShipFaction.emeraldTwilight: SpatialHash(50),
+    ShipFaction.galaxyFreedom: SpatialHash(50),
+    ShipFaction.quartz: SpatialHash(50),
+    ShipFaction.rubyOmega: SpatialHash(50),
+    ShipFaction.sapphireDommination: SpatialHash(50),
+    ShipFaction.spinel: SpatialHash(50),
+    ShipFaction.topazCrusher: SpatialHash(50),
+  };
   late final ComponentPool<ProjectileComponent> projectilePool;
   GalaxyGame({required this.gameStateProvider, required this.settingsProvider});
   @override
@@ -85,9 +97,19 @@ class GalaxyGame extends FlameGame
   }
 
   void updateShipsHash() {
-    spatialHash.clear();
+    shipsSpatialHash.clear();
     for (final ship in world.children.whereType<ShipComponent>()) {
-      spatialHash.insert(ship);
+      shipsSpatialHash.insert(ship);
+    }
+    for (final hash in factionSpatialHashes.values) {
+      hash.clear();
+    }
+
+    for (final ShipFaction faction in gameStateProvider.state.ships.keys) {
+      for (final ShipComponent ship
+          in gameStateProvider.state.ships[faction]!) {
+        factionSpatialHashes[faction]?.insert(ship);
+      }
     }
   }
 
@@ -116,6 +138,7 @@ class GalaxyGame extends FlameGame
         key: ComponentKey.named("player"),
         data: ShipData(
           hasController: true,
+          type: ShipType.player,
           x: 500,
           y: 500,
           speed: 200,
@@ -125,14 +148,11 @@ class GalaxyGame extends FlameGame
           shieldType: ShieldType.chevron,
           maxLife: 1000,
           hasInmunity: true,
+          attackFactions: [ShipFaction.amethyst],
         ),
       );
       await world.add(player);
-      gameStateProvider.shipAdded(
-        key: player.data.key,
-        faction: player.data.faction,
-        enemy: false,
-      );
+      gameStateProvider.shipAdded(ship: player, enemy: false);
       gameStateProvider.setLife(player.data.currentLife);
       camera.follow(player);
       _miniMapCamera.follow(player);
@@ -158,10 +178,7 @@ class GalaxyGame extends FlameGame
               rng: gameStateProvider.rng,
             ),
           );
-          gameStateProvider.shipAdded(
-            faction: ship.data.faction,
-            key: ship.data.key,
-          );
+          gameStateProvider.shipAdded(ship: ship);
           return ship;
         },
       );

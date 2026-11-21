@@ -37,10 +37,15 @@ class ShipData {
   double projectileSpeed;
   bool hasInmunity;
   String key;
+  List<ShipFaction> attackFactions;
+  String currentKeyTarget;
+  ShipFaction? currentFactionTarget;
 
   ShipData({
     this.currentLife = 0,
     this.key = "",
+    this.currentKeyTarget = "",
+    this.currentFactionTarget,
     this.maxLife = 100,
     this.attack = 10,
     this.speed = 150,
@@ -68,6 +73,7 @@ class ShipData {
     this.maintainDistance = 450,
     this.maxSeparationFactor = 2.5,
     this.minSeparationFactor = 0.5,
+    this.attackFactions = const [],
   }) : color = Color(shipColor),
        separationFactor = 1.0 {
     if (currentLife == 0) {
@@ -187,5 +193,10 @@ class ShipData {
       return rng.nextDoubleBetween(0.5, maxSeparationFactor);
     }
     return separationFactor;
+  }
+
+  bool shouldAttack(ShipData other) {
+    return other.key == currentKeyTarget ||
+        attackFactions.contains(other.faction);
   }
 }

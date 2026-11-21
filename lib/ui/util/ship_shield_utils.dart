@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
 
-class ShipUtils {
+class ShipShieldUtils {
   static List<Component> generateShields(ShipData data) {
     List<Component> shields = [];
     final gap = data.radius * 0.3; // 0.2~0.5

@@ -94,6 +94,7 @@ class LevelGenerator {
       radius: rng.nextIntBetween(8, 64) * 1.0,
       shieldType: ShieldType.values.random(rng),
       type: ShipType.values.random(rng),
+      attackFactions: [ShipFaction.galaxyFreedom],
     );
   }
 }

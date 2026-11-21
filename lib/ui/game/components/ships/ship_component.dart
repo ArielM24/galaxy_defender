@@ -12,13 +12,14 @@ import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
 import 'package:galaxy_defender/ui/game/components/ships/trail_component.dart';
 import 'package:galaxy_defender/ui/game/galaxy_game.dart';
-import 'package:galaxy_defender/ui/util/ship_utils.dart';
+import 'package:galaxy_defender/ui/util/ship_shield_utils.dart';
 
 class ShipComponent extends PositionComponent
     with KeyboardHandler, CollisionCallbacks, HasGameReference<GalaxyGame> {
   ShipData data;
-  double _timeToChangeIADirection = 0;
-  double _shootCooldown = 0;
+  late TimerComponent _changeIADirectionTimer;
+  late TimerComponent _shootTargetTimer;
+  late TimerComponent _chooseTargetTimer;
 
   Vector2 _currentDirection = Vector2.zero();
   ShipComponent({required this.data, super.key});
@@ -96,7 +97,7 @@ class ShipComponent extends PositionComponent
       ),
     );
     //add(coreGlow);
-    addAll(ShipUtils.generateShields(data));
+    addAll(ShipShieldUtils.generateShields(data));
 
     add(
       RotateEffect.by(
@@ -106,7 +107,33 @@ class ShipComponent extends PositionComponent
     );
 
     add(TrailComponent(target: this, color: data.color));
-
+    _chooseTargetTimer = TimerComponent(
+      repeat: true,
+      period: 1.0,
+      autoStart: true,
+      onTick: () {
+        setTarget();
+      },
+    );
+    _changeIADirectionTimer = TimerComponent(
+      repeat: true,
+      period: 1.0,
+      autoStart: true,
+      onTick: () {
+        _changeIADirection();
+      },
+    );
+    _shootTargetTimer = TimerComponent(
+      repeat: true,
+      period: 1.0,
+      autoStart: true,
+      onTick: () {
+        _shootToTarget();
+      },
+    );
+    add(_chooseTargetTimer);
+    add(_changeIADirectionTimer);
+    add(_shootTargetTimer);
     return super.onLoad();
   }
 
@@ -172,14 +199,17 @@ class ShipComponent extends PositionComponent
   }
 
   void _changeIADirection() {
+    if (data.type == ShipType.player || getCurrentTarget() != null) {
+      return;
+    }
     final angle = game.gameStateProvider.rng.nextDouble() * 2 * pi;
     _currentDirection = Vector2(cos(angle), sin(angle));
-    _timeToChangeIADirection = 2 + game.gameStateProvider.rng.nextDouble() * 4;
   }
 
   Vector2 calculateIAMovement(double dt) {
     if (!isInBounds(position)) {
       _changeIADirection();
+      _changeIADirectionTimer.timer.reset();
     }
 
     // static
@@ -187,41 +217,33 @@ class ShipComponent extends PositionComponent
       return position;
     }
 
-    // dont care about enemy
-    if (data.type == ShipType.explorer) {
+    ShipComponent? target = getCurrentTarget();
+
+    // explorer dont care about enemy
+    if (data.type == ShipType.explorer || target == null) {
       Vector2 p = normilizeDirection(_currentDirection, dt);
       p += _separation() * (data.speed * dt * 2);
       return _clampPosition(p);
     }
 
-    final toTarget = game.gameStateProvider.state.playerPosition - position;
+    final toTarget = target.position - position;
     final dist = toTarget.length;
 
-    // goes directly to player
-    if (data.type == ShipType.kamikaze &&
-        (dist <= data.detectRadius || data.targetPlayer)) {
-      data.targetPlayer = true;
+    // goes directly to target
+    if (data.type == ShipType.kamikaze && (dist <= data.detectRadius)) {
       _currentDirection = toTarget / dist;
     }
 
-    // follows player at some distance
-    if (data.type == ShipType.soldier &&
-        (dist <= data.detectRadius || data.targetPlayer)) {
-      data.targetPlayer = true;
+    // follows target at some distance
+    if (data.type == ShipType.soldier && (dist <= data.detectRadius)) {
       if (dist > data.maintainDistance) {
-        _currentDirection = toTarget / dist; // retroceder
+        _currentDirection = toTarget / dist; // go back, keep distance
       } else {
+        // get close to target and orbit
         final orbitDir = Vector2(-toTarget.y / dist, toTarget.x / dist);
         Vector2 p = normilizeDirection(orbitDir, dt);
         p += _separation() * (data.speed * dt * 5);
         return _clampPosition(p);
-      }
-    }
-
-    if (!data.targetPlayer) {
-      _timeToChangeIADirection -= dt;
-      if (_timeToChangeIADirection <= 0) {
-        _changeIADirection();
       }
     }
 
@@ -231,12 +253,13 @@ class ShipComponent extends PositionComponent
   }
 
   Vector2 _separation() {
-    var radius = data.radius * 1.5;
+    var radius = data.radius * 3;
     var radiusSq = radius * radius;
     final force = Vector2.zero();
     final myPos = position;
 
-    game.spatialHash.query(myPos.x, myPos.y, radius, (other) {
+    // calculate repulsion force
+    game.shipsSpatialHash.query(myPos.x, myPos.y, radius, (other) {
       if (identical(other, this)) return;
       final dx = myPos.x - other.position.x;
       final dy = myPos.y - other.position.y;
@@ -248,7 +271,7 @@ class ShipComponent extends PositionComponent
       force.x += (dx / d) * factor;
       force.y += (dy / d) * factor;
     });
-
+    // add randomness for every ship to the repulsion force
     return force * data.getSeparationFactor(game.gameStateProvider.rng);
   }
 
@@ -266,28 +289,22 @@ class ShipComponent extends PositionComponent
     } else {
       position = calculateIAMovement(dt);
     }
-    if (data.type == ShipType.soldier) {
-      shootToTarget(dt);
-    }
   }
 
-  void shootToTarget(double dt) {
-    _shootCooldown -= dt;
-    if (_shootCooldown <= 0) {
-      _generateShoot();
+  void _shootToTarget() {
+    ShipComponent? target = getCurrentTarget();
+    if (target == null) {
+      return;
     }
-  }
-
-  void _generateShoot() {
-    final playerPos = game.gameStateProvider.state.playerPosition;
-    final toPlayer = playerPos - position;
-    final dist = toPlayer.length;
+    final targetPos = target.position;
+    final toTarget = targetPos - position;
+    final dist = toTarget.length;
 
     // Solo dispara si el player está en rango
     if (dist > data.detectRadius) return;
 
     // Dirección hacia el player
-    final dir = toPlayer / dist;
+    final dir = toTarget / dist;
 
     // Offset de disparo (saliendo del borde del ship, no del centro)
     final spawnPos = position + dir * (size.x / 2);
@@ -298,18 +315,65 @@ class ShipComponent extends PositionComponent
     proj.data.color = data.color;
     proj.updateFromData();
     game.world.add(proj);
+  }
 
-    _shootCooldown = data.rateOfFire;
+  // if returns null the target is dead or is not setted
+  ShipComponent? getCurrentTarget() {
+    if (data.currentFactionTarget != null) {
+      for (ShipComponent ship
+          in game.gameStateProvider.state.ships[data.currentFactionTarget]!) {
+        if (ship.data.key == data.currentKeyTarget) {
+          return ship;
+        }
+      }
+    }
+    return null;
+  }
+
+  void setTarget() {
+    if (data.type == ShipType.explorer ||
+        data.type == ShipType.fabricator ||
+        data.type == ShipType.miner) {
+      return;
+    }
+    // for ShipType.soldier, ShipType.kamikaze and ShipType.player
+    // check if current target stills alive, if not, clear the target info
+    if (getCurrentTarget() == null) {
+      data.currentFactionTarget = null;
+      data.currentKeyTarget = "";
+    }
+
+    PositionComponent? target;
+    // if target is empty choose another one from the spatial hashes
+    for (final faction in data.attackFactions) {
+      double bestDistance = -1;
+      game.factionSpatialHashes[faction]?.query(x, y, data.detectRadius, (
+        other,
+      ) {
+        final distance = (other.position - position).length;
+        // change for attack type
+        if (bestDistance == -1 || distance < bestDistance) {
+          bestDistance = distance;
+          target = other;
+        }
+      });
+    }
+
+    // if target found in detection radius then choose it
+    if (target != null) {
+      data.currentFactionTarget = (target as ShipComponent).data.faction;
+      data.currentKeyTarget = (target as ShipComponent).data.key;
+    }
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is ShipComponent &&
         data.type == ShipType.kamikaze &&
-        (other.key == ComponentKey.named("player"))) {
-      removeFromParent();
+        (other.data.key == data.currentKeyTarget)) {
       game.gameStateProvider.damagePlayer(data.attack);
-      game.gameStateProvider.shipRemoved(faction: data.faction, key: data.key);
+      game.gameStateProvider.shipRemoved(ship: this);
+      removeFromParent();
     }
     super.onCollision(intersectionPoints, other);
   }

@@ -6,7 +6,7 @@ class SettingsData {
   bool showPlayerPosition;
   SettingsData({
     this.hudColor = Colors.indigoAccent,
-    this.showFPS = false,
+    this.showFPS = true,
     this.showPlayerPosition = true,
   });
 }

@@ -9,6 +9,7 @@ import 'package:galaxy_defender/data/model/level_generator.dart';
 import 'package:galaxy_defender/data/repository/game_repository.dart';
 import 'package:galaxy_defender/data/repository/level_repository.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
+import 'package:galaxy_defender/ui/game/components/ships/ship_component.dart';
 
 class GameStateProvider extends ChangeNotifier {
   GameStateData state;
@@ -99,27 +100,21 @@ class GameStateProvider extends ChangeNotifier {
     }
   }
 
-  void shipAdded({
-    required String key,
-    required ShipFaction faction,
-    bool enemy = true,
-  }) {
-    if (state.shipKeys.containsKey(faction)) {
-      state.shipKeys[faction]!.add(key);
+  void shipAdded({required ShipComponent ship, bool enemy = true}) {
+    if (state.ships.containsKey(ship.data.faction)) {
+      state.ships[ship.data.faction]!.add(ship);
     } else {
-      state.shipKeys[faction] = [key];
+      state.ships[ship.data.faction] = [ship];
     }
-    state.enemyCount++;
+    if (enemy) {
+      state.enemyCount++;
+    }
     notifyListeners();
   }
 
-  void shipRemoved({
-    required String key,
-    required ShipFaction faction,
-    bool enemy = true,
-  }) {
-    bool removed = state.shipKeys[faction]?.remove(key) ?? false;
-    if (removed) {
+  void shipRemoved({required ShipComponent ship, bool enemy = true}) {
+    bool removed = state.ships[ship.data.faction]?.remove(ship) ?? false;
+    if (removed && enemy) {
       state.enemyCount--;
       notifyListeners();
     }
@@ -138,9 +133,9 @@ class GameStateProvider extends ChangeNotifier {
 
   String get _logShips {
     String str = "│ Level data:\n";
-    Iterable<ShipFaction> factions = state.shipKeys.keys;
+    Iterable<ShipFaction> factions = state.ships.keys;
     for (ShipFaction faction in factions) {
-      int count = state.shipKeys[faction]!.length;
+      int count = state.ships[faction]!.length;
       str += "│ $faction: $count\n";
     }
     return str;

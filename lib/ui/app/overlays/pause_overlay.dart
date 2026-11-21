@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
 import 'package:galaxy_defender/data/providers/settings_provider.dart';
-import 'package:galaxy_defender/ui/app/overlays/system_overlay.dart';
-import 'package:galaxy_defender/ui/app/pages/game_page.dart';
 import 'package:galaxy_defender/ui/app/pages/main_menu_page.dart';
 import 'package:galaxy_defender/ui/widgets/neon_button.dart';
 import 'package:galaxy_defender/ui/widgets/neon_text.dart';
