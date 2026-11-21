@@ -90,6 +90,7 @@ class GalaxyGame extends FlameGame
           hasController: true,
           x: 500,
           y: 500,
+          speed: 200,
           shipColor: ShipFaction.galaxyFreedom.color,
           faction: ShipFaction.galaxyFreedom,
           arrows: 3,

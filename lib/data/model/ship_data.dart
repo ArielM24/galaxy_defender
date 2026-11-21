@@ -21,11 +21,16 @@ class ShipData {
   double glowingDuration;
   bool hasController;
   ShieldType shieldType;
+  double detectRadius;
+  double maintainDistance;
+  bool targetPlayer;
+
   ShipData({
     this.currentLife = 100,
     this.maxLife = 100,
     this.attack = 10,
     this.speed = 150,
+    this.targetPlayer = false,
     this.x = 250,
     this.y = 250,
     this.armour = 2,
@@ -42,6 +47,8 @@ class ShipData {
     this.hasController = false,
     this.radius = 16,
     this.shieldType = ShieldType.arrow,
+    this.detectRadius = 300,
+    this.maintainDistance = 250,
   });
 
   ShipData copyWith({
@@ -65,6 +72,7 @@ class ShipData {
     double? glowingDuration,
     bool? hasController,
     ShieldType? shieldType,
+    bool? targetPlayer,
   }) {
     return ShipData(
       currentLife: currentLife ?? this.currentLife,
@@ -83,6 +91,7 @@ class ShipData {
       type: type ?? this.type,
       radius: radius ?? this.radius,
       arrows: arrows ?? this.arrows,
+      targetPlayer: targetPlayer ?? this.targetPlayer,
       rotationDuration: rotationDuration ?? this.rotationDuration,
       glowingDuration: glowingDuration ?? this.glowingDuration,
       hasController: hasController ?? this.hasController,
@@ -112,6 +121,7 @@ class ShipData {
       'glowingDuration': glowingDuration,
       'hasController': hasController,
       'shieldType': shieldType,
+      'targetPlayer': targetPlayer,
     };
   }
 
@@ -141,6 +151,7 @@ class ShipData {
       glowingDuration: (map['glowingDuration'] as num).toDouble(),
       hasController: map['hasController'] as bool,
       shieldType: ShieldType.values.byName(map["shieldType"] ?? "arrow"),
+      targetPlayer: map['targetPlayer'] ?? false,
     );
   }
 

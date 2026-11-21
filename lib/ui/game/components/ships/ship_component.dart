@@ -8,6 +8,7 @@ import 'package:flame/experimental.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
+import 'package:galaxy_defender/data/util/enums.dart';
 import 'package:galaxy_defender/ui/game/components/ships/trail_component.dart';
 import 'package:galaxy_defender/ui/game/galaxy_game.dart';
 import 'package:galaxy_defender/ui/util/ship_utils.dart';
@@ -175,18 +176,41 @@ class ShipComponent extends PositionComponent
   }
 
   Vector2 calculateIAMovement(double dt) {
-    Vector2 p = position;
-    _timeToChangeIADirection -= dt;
-    if (_timeToChangeIADirection <= 0) {
+    if (!isInBounds(position)) {
       _changeIADirection();
     }
+    final toPlayer = game.gameStateProvider.state.playerPosition - position;
+    final dist = toPlayer.length;
 
-    p += _currentDirection * (data.speed * dt);
+    if (data.type == ShipType.kamikaze &&
+        (dist <= data.detectRadius || data.targetPlayer)) {
+      data.targetPlayer = true;
+      _currentDirection = toPlayer.normalized();
+    }
+
+    if (data.type == ShipType.soldier &&
+        (dist <= data.detectRadius || data.targetPlayer)) {
+      data.targetPlayer = true;
+      if (dist > data.maintainDistance) {
+        _currentDirection = toPlayer.normalized(); // retroceder
+      } else {
+        return normilizeDirection(Vector2(0, 0), dt);
+      }
+    }
+
+    if (!data.targetPlayer) {
+      _timeToChangeIADirection -= dt;
+      if (_timeToChangeIADirection <= 0) {
+        _changeIADirection();
+      }
+    }
+
+    return normilizeDirection(_currentDirection, dt);
+  }
+
+  Vector2 normilizeDirection(Vector2 direction, double dt) {
+    Vector2 p = position + direction * (data.speed * dt);
     p = _clampPosition(p);
-
-    if (!isInBounds(p)) {
-      _changeIADirection();
-    }
     return p;
   }
 
