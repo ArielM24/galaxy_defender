@@ -32,6 +32,7 @@ class ShipData {
   double separationFactor;
   double rateOfFire;
   double projectileSpeed;
+  bool hasInmunity;
 
   ShipData({
     this.currentLife = 0,
@@ -39,6 +40,7 @@ class ShipData {
     this.attack = 10,
     this.speed = 150,
     this.targetPlayer = false,
+    this.hasInmunity = false,
     this.x = 250,
     this.y = 250,
     this.rateOfFire = 1.5,

@@ -294,25 +294,21 @@ class ShipComponent extends PositionComponent
     // Offset de disparo (saliendo del borde del ship, no del centro)
     final spawnPos = position + dir * (size.x / 2);
 
-    // Agregar al world (no como hijo del ship)
-    game.world.add(
-      ProjectileComponent(
-        data: ProjectileData(
-          velocity: dir * data.projectileSpeed,
-          color: data.color,
-          position: spawnPos,
-          size: 8.0,
-        ),
-      ),
-    );
+    final proj = game.projectilePool.acquire();
+    proj.position.setFrom(spawnPos);
+    proj.data.velocity.setFrom(dir * data.projectileSpeed);
+    proj.data.color = data.color;
+    proj.updateFromData();
+    game.world.add(proj);
 
-    // Resetear cooldown
     _shootCooldown = data.rateOfFire;
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if (other is ShipComponent && (other.key == ComponentKey.named("player"))) {
+    if (other is ShipComponent &&
+        data.type == ShipType.kamikaze &&
+        (other.key == ComponentKey.named("player"))) {
       removeFromParent();
       game.gameStateProvider.damagePlayer(data.attack);
       game.gameStateProvider.enemyRemoved();

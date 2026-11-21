@@ -51,3 +51,5 @@ enum ShieldType {
   bow,
   xShape,
 }
+
+enum ProjectileType { cannon }

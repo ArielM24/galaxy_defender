@@ -14,7 +14,7 @@ class TrailComponent extends PositionComponent {
   final PositionComponent target;
   final int maxPoints;
   final double interval;
-  final Color color;
+  Color color;
 
   final List<Vector2> _points = [];
   double _timer = 0;
@@ -37,6 +37,7 @@ class TrailComponent extends PositionComponent {
 
   @override
   void render(Canvas canvas) {
+    if (_points.isEmpty) return;
     canvas.save();
     // Mover al centro y contrarrotar
     canvas.translate(size.x / 2, size.y / 2);
@@ -46,6 +47,12 @@ class TrailComponent extends PositionComponent {
       final t = 1.0 - i / maxPoints;
       final local =
           _points[i] - target.position; // relativo al centro del player
+      if (local.x.isNaN ||
+          local.y.isNaN ||
+          local.x.isInfinite ||
+          local.y.isInfinite) {
+        continue;
+      }
       canvas.drawCircle(
         local.toOffset(),
         4.0 * t,
@@ -55,5 +62,10 @@ class TrailComponent extends PositionComponent {
       );
     }
     canvas.restore();
+  }
+
+  void reset() {
+    _points.clear();
+    _timer = 0;
   }
 }

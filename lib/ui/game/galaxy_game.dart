@@ -4,6 +4,7 @@ import 'package:flame/components.dart';
 import 'package:flame/game.dart';
 import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
+import 'package:galaxy_defender/data/model/projectile_data.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
 import 'package:galaxy_defender/data/providers/settings_provider.dart';
@@ -11,6 +12,7 @@ import 'package:galaxy_defender/data/util/enums.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_button_overlay.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_overlay.dart';
 import 'package:galaxy_defender/ui/game/components/map/mini_map_component.dart';
+import 'package:galaxy_defender/ui/game/components/projectile_componen.dart';
 import 'package:galaxy_defender/ui/game/components/ships/ship_component.dart';
 import 'package:galaxy_defender/ui/util/spatial_hash.dart';
 
@@ -20,6 +22,7 @@ class GalaxyGame extends FlameGame
   final SettingsProvider settingsProvider;
   late MiniMapComponent _miniMapCamera;
   final SpatialHash spatialHash = SpatialHash(50);
+  late final ComponentPool<ProjectileComponent> projectilePool;
   GalaxyGame({required this.gameStateProvider, required this.settingsProvider});
   @override
   Future<void> onLoad() async {
@@ -35,6 +38,18 @@ class GalaxyGame extends FlameGame
       world: world,
       gameStateProvider: gameStateProvider,
       settingsProvider: settingsProvider,
+    );
+    projectilePool = ComponentPool<ProjectileComponent>(
+      factory: () => ProjectileComponent(
+        data: ProjectileData(
+          velocity: Vector2.zero(),
+          color: settingsProvider.settingsData.hudColor,
+          position: Vector2.zero(),
+          size: 4,
+        ),
+      ),
+      maxSize: 100,
+      initialSize: 20,
     );
     add(world);
     add(camera);
@@ -109,6 +124,7 @@ class GalaxyGame extends FlameGame
           arrows: 3,
           shieldType: ShieldType.xShape,
           maxLife: 1000,
+          hasInmunity: true,
         ),
       );
       await world.add(player);
