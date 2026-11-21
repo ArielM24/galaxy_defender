@@ -5,6 +5,7 @@ import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
 import 'package:flame/experimental.dart';
+import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
@@ -185,19 +186,19 @@ class ShipComponent extends PositionComponent
     if (data.type == ShipType.kamikaze &&
         (dist <= data.detectRadius || data.targetPlayer)) {
       data.targetPlayer = true;
-      _currentDirection = toPlayer.normalized();
+      _currentDirection = toPlayer / dist;
     }
 
     if (data.type == ShipType.soldier &&
         (dist <= data.detectRadius || data.targetPlayer)) {
       data.targetPlayer = true;
       if (dist > data.maintainDistance) {
-        _currentDirection = toPlayer.normalized(); // retroceder
+        _currentDirection = toPlayer / dist; // retroceder
       } else {
         final orbitDir = Vector2(-toPlayer.y / dist, toPlayer.x / dist);
         Vector2 p = normilizeDirection(orbitDir, dt);
-        p += _separation() * (data.speed * dt * 2);
-        return p;
+        p += _separation() * (data.speed * dt * 5);
+        return _clampPosition(p);
       }
     }
 
@@ -212,30 +213,29 @@ class ShipComponent extends PositionComponent
 
     p += _separation() * (data.speed * dt * 2);
 
-    return p;
+    return _clampPosition(p);
   }
 
   Vector2 _separation() {
-    var separationRadius = data.radius * 1.5;
-    var force = Vector2.zero();
+    var radius = data.radius * 1.5;
+    var radiusSq = radius * radius;
+    final force = Vector2.zero();
     final myPos = position;
 
-    for (final other in game.world.children.whereType<ShipComponent>()) {
-      if (other == this) continue;
-
-      // Culling rápido (evita sqrt si no está cerca)
+    game.spatialHash.query(myPos.x, myPos.y, radius, (other) {
+      if (identical(other, this)) return;
       final dx = myPos.x - other.position.x;
       final dy = myPos.y - other.position.y;
-      if (dx * dx + dy * dy > separationRadius * separationRadius) continue;
+      final distSq = dx * dx + dy * dy;
+      if (distSq > radiusSq || distSq < 0.0001) return;
 
-      final dist = sqrt(dx * dx + dy * dy);
-      if (dist > 0.001) {
-        force +=
-            Vector2(dx / dist, dy / dist) * (1.0 - dist / separationRadius);
-      }
-    }
+      final d = sqrt(distSq);
+      final factor = (1.0 - d / radius) * (1.0 - d / radius);
+      force.x += (dx / d) * factor;
+      force.y += (dy / d) * factor;
+    });
 
-    return force;
+    return force * data.getSeparationFactor(game.gameStateProvider.rng);
   }
 
   Vector2 normilizeDirection(Vector2 direction, double dt) {

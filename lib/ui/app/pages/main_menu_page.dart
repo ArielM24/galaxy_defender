@@ -25,6 +25,7 @@ class MainMenuPage extends StatelessWidget {
     return Scaffold(
       body: SpaceBackground(
         nebulae: 6,
+        rng: gameStateProvider.rng,
         child: Center(
           child: Column(
             children: [

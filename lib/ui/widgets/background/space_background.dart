@@ -9,7 +9,7 @@ import 'package:galaxy_defender/ui/util/star_painter.dart';
 
 class SpaceBackground extends StatefulWidget {
   final Widget? child;
-  final Random? rng;
+  final Random rng;
   final int stars;
   final int nebulae;
   final Offset parallaxOffset;
@@ -17,7 +17,7 @@ class SpaceBackground extends StatefulWidget {
   const SpaceBackground({
     super.key,
     this.child,
-    this.rng,
+    required this.rng,
     this.stars = 120,
     this.nebulae = 6,
     this.parallaxOffset = Offset.zero,
@@ -36,13 +36,10 @@ class _SpaceBackgroundState extends State<SpaceBackground> {
   @override
   void initState() {
     super.initState();
-    _stars = List.generate(
-      widget.stars,
-      (_) => StarData.random(widget.rng ?? Random()),
-    );
+    _stars = List.generate(widget.stars, (_) => StarData.random(widget.rng));
     _nebulae = List.generate(
       widget.nebulae,
-      (_) => NebulaData.random(widget.rng ?? Random()),
+      (_) => NebulaData.random(widget.rng),
     );
     _ticker = Ticker((elapsed) {
       _timeNotifier.value = DateTime.now().millisecondsSinceEpoch / 1000.0;

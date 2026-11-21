@@ -1,4 +1,6 @@
-import 'package:flutter/material.dart';
+import 'dart:math';
+
+import 'package:flame/extensions.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
 
 class ShipData {
@@ -24,6 +26,10 @@ class ShipData {
   double detectRadius;
   double maintainDistance;
   bool targetPlayer;
+  double maxSeparationFactor;
+  double minSeparationFactor;
+  Color color;
+  double separationFactor;
 
   ShipData({
     this.currentLife = 100,
@@ -47,9 +53,12 @@ class ShipData {
     this.hasController = false,
     this.radius = 16,
     this.shieldType = ShieldType.arrow,
-    this.detectRadius = 300,
-    this.maintainDistance = 250,
-  });
+    this.detectRadius = 550,
+    this.maintainDistance = 450,
+    this.maxSeparationFactor = 2.5,
+    this.minSeparationFactor = 0.5,
+  }) : color = Color(shipColor),
+       separationFactor = 1.0;
 
   ShipData copyWith({
     double? currentLife,
@@ -155,5 +164,10 @@ class ShipData {
     );
   }
 
-  Color get color => Color(shipColor);
+  double getSeparationFactor(Random rng) {
+    if (separationFactor == 1.0) {
+      return rng.nextDoubleBetween(0.5, maxSeparationFactor);
+    }
+    return separationFactor;
+  }
 }

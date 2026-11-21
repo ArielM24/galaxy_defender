@@ -16,7 +16,7 @@ class StarData {
       1.0 + rng.nextDouble() * 2.0,
       0.05 + rng.nextDouble() * 0.15,
       rng.nextDouble() * 2 * pi,
-      StarColors.pickRandomColor(rng: rng),
+      StarColors.pickRandomColor(rng),
     );
   }
 }

@@ -18,8 +18,8 @@ class NebulaColors {
   static const Color planetaryGreen = Color(0xFF66FFCC); // O-III dominante
   static const Color planetaryPurple = Color(0xFFAA44FF); // Mezcla H-α + O-III
 
-  static Color pickNebulaColor({Random? rng}) {
-    final r = (rng ?? Random()).nextDouble();
+  static Color pickNebulaColor(Random rng) {
+    final r = rng.nextDouble();
     if (r < 0.30) return NebulaColors.emissionRed;
     if (r < 0.45) return NebulaColors.emissionPink;
     if (r < 0.55) return NebulaColors.emissionGreen;
@@ -42,10 +42,10 @@ class NebulaColors {
     return [NebulaColors.reflectionBlue, NebulaColors.emissionCyan];
   }
 
-  static List<Color> randomPalete({Random? rng, int maxColors = 1}) {
+  static List<Color> randomPalete({required Random rng, int maxColors = 1}) {
     List<Color> palette = [];
     for (int i = 0; i < maxColors; i++) {
-      palette.add(pickNebulaColor(rng: rng));
+      palette.add(pickNebulaColor(rng));
     }
     return palette;
   }

@@ -12,8 +12,8 @@ class StarColors {
   static const Color m = Color(0xFFFF4444); // Rojo
 
   // Distribución realista: la mayoría son G, K, M
-  static Color pickRandomColor({Random? rng}) {
-    final r = (rng ?? Random()).nextDouble();
+  static Color pickRandomColor(Random rng) {
+    final r = rng.nextDouble();
     if (r < 0.05) return StarColors.o;
     if (r < 0.15) return StarColors.b;
     if (r < 0.30) return StarColors.a;

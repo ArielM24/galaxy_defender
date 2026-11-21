@@ -12,12 +12,14 @@ import 'package:galaxy_defender/ui/app/overlays/pause_button_overlay.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_overlay.dart';
 import 'package:galaxy_defender/ui/game/components/map/mini_map_component.dart';
 import 'package:galaxy_defender/ui/game/components/ships/ship_component.dart';
+import 'package:galaxy_defender/ui/util/spatial_hash.dart';
 
 class GalaxyGame extends FlameGame
     with HasKeyboardHandlerComponents, HasGameReference, HasCollisionDetection {
   final GameStateProvider gameStateProvider;
   final SettingsProvider settingsProvider;
   late MiniMapComponent _miniMapCamera;
+  final SpatialHash spatialHash = SpatialHash(50);
   GalaxyGame({required this.gameStateProvider, required this.settingsProvider});
   @override
   Future<void> onLoad() async {
@@ -64,6 +66,14 @@ class GalaxyGame extends FlameGame
   void update(double dt) {
     super.update(dt);
     updateParallax();
+    updateShipsHash();
+  }
+
+  void updateShipsHash() {
+    spatialHash.clear();
+    for (final ship in world.children.whereType<ShipComponent>()) {
+      spatialHash.insert(ship);
+    }
   }
 
   void updateParallax() {
@@ -108,10 +118,7 @@ class GalaxyGame extends FlameGame
   Future<void> addSpawners() async {
     for (
       int i = 0;
-      i <
-          gameStateProvider.generator.spawnersNumber(
-            rng: gameStateProvider.rng,
-          );
+      i < gameStateProvider.generator.spawnersNumber(gameStateProvider.rng);
       i++
     ) {
       SpawnComponent spawner = SpawnComponent.periodRange(
