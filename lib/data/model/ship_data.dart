@@ -30,6 +30,8 @@ class ShipData {
   double minSeparationFactor;
   Color color;
   double separationFactor;
+  double rateOfFire;
+  double projectileSpeed;
 
   ShipData({
     this.currentLife = 0,
@@ -39,6 +41,8 @@ class ShipData {
     this.targetPlayer = false,
     this.x = 250,
     this.y = 250,
+    this.rateOfFire = 1.5,
+    this.projectileSpeed = 100,
     this.armour = 2,
     this.size = 16,
     this.factionAttackType = ShipFactionAttackType.everyOther,

@@ -8,8 +8,10 @@ import 'package:flame/experimental.dart';
 import 'package:flame/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:galaxy_defender/data/model/projectile_data.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
+import 'package:galaxy_defender/ui/game/components/projectile_componen.dart';
 import 'package:galaxy_defender/ui/game/components/ships/trail_component.dart';
 import 'package:galaxy_defender/ui/game/galaxy_game.dart';
 import 'package:galaxy_defender/ui/util/ship_utils.dart';
@@ -18,6 +20,7 @@ class ShipComponent extends PositionComponent
     with KeyboardHandler, CollisionCallbacks, HasGameReference<GalaxyGame> {
   ShipData data;
   double _timeToChangeIADirection = 0;
+  double _shootCooldown = 0;
 
   Vector2 _currentDirection = Vector2.zero();
   ShipComponent({required this.data, super.key});
@@ -265,6 +268,46 @@ class ShipComponent extends PositionComponent
     } else {
       position = calculateIAMovement(dt);
     }
+    if (data.type == ShipType.soldier) {
+      shootToTarget(dt);
+    }
+  }
+
+  void shootToTarget(double dt) {
+    _shootCooldown -= dt;
+    if (_shootCooldown <= 0) {
+      _generateShoot();
+    }
+  }
+
+  void _generateShoot() {
+    final playerPos = game.gameStateProvider.state.playerPosition;
+    final toPlayer = playerPos - position;
+    final dist = toPlayer.length;
+
+    // Solo dispara si el player está en rango
+    if (dist > data.detectRadius) return;
+
+    // Dirección hacia el player
+    final dir = toPlayer / dist;
+
+    // Offset de disparo (saliendo del borde del ship, no del centro)
+    final spawnPos = position + dir * (size.x / 2);
+
+    // Agregar al world (no como hijo del ship)
+    game.world.add(
+      ProjectileComponent(
+        data: ProjectileData(
+          velocity: dir * data.projectileSpeed,
+          color: data.color,
+          position: spawnPos,
+          size: 8.0,
+        ),
+      ),
+    );
+
+    // Resetear cooldown
+    _shootCooldown = data.rateOfFire;
   }
 
   @override

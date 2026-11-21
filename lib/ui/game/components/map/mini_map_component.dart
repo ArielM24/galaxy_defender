@@ -103,25 +103,25 @@ class MiniMapComponent extends CameraComponent {
     return super.onLoad();
   }
 
-  void updateHud() {
-    updateFPS();
-    updatePlayerPosition();
+  Future<void> updateHud() async {
+    await updateFPS();
+    await updatePlayerPosition();
   }
 
-  void updatePlayerPosition() {
+  Future<void> updatePlayerPosition() async {
     if (settingsProvider.settingsData.showPlayerPosition) {
       _positionHud ??= PlayerPositionHud(
         gameStateProvider: gameStateProvider,
         mapSize: mapSize,
         settingsProvider: settingsProvider,
       );
-      viewport.add(_positionHud!);
+      await viewport.add(_positionHud!);
     } else if (_positionHud != null) {
       viewport.remove(_positionHud!);
     }
   }
 
-  void updateFPS() {
+  Future<void> updateFPS() async {
     if (settingsProvider.settingsData.showFPS) {
       _fpsTextComponent ??= FpsTextComponent(
         position: Vector2(5, 40),
@@ -132,7 +132,7 @@ class MiniMapComponent extends CameraComponent {
           ),
         ),
       );
-      viewport.add(_fpsTextComponent!);
+      await viewport.add(_fpsTextComponent!);
     } else if (_fpsTextComponent != null) {
       viewport.remove(_fpsTextComponent!);
     }
