@@ -11,7 +11,7 @@ class NeonButton extends StatelessWidget {
   final double? iconSize;
   const NeonButton({
     this.text = "",
-    this.color = Colors.cyanAccent,
+    required this.color,
     this.margin = 0,
     this.onTap,
     this.icon,

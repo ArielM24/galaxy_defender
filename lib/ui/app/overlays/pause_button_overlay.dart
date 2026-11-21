@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
+import 'package:galaxy_defender/data/providers/settings_provider.dart';
 import 'package:galaxy_defender/ui/widgets/neon_button.dart';
 
 class PauseButtonOverlay extends StatelessWidget {
   static final String overlayKey = "PauseButtonOverlay";
   final GameStateProvider gameStateProvider;
-  const PauseButtonOverlay({super.key, required this.gameStateProvider});
+  final SettingsProvider settingsProvider;
+  const PauseButtonOverlay({
+    super.key,
+    required this.gameStateProvider,
+    required this.settingsProvider,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +25,7 @@ class PauseButtonOverlay extends StatelessWidget {
               : Icons.pause;
           return NeonButton(
             margin: 8,
+            color: settingsProvider.settingsData.hudColor,
             icon: icon,
             onTap: () {
               gameStateProvider.pauseGame();

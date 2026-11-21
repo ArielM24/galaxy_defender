@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
+import 'package:galaxy_defender/data/providers/settings_provider.dart';
 import 'package:galaxy_defender/ui/app/pages/galactic_map_page.dart';
 import 'package:galaxy_defender/ui/app/pages/game_page.dart';
 import 'package:galaxy_defender/ui/widgets/neon_button.dart';
@@ -12,7 +13,12 @@ import 'package:ultimate_flutter_icons/flutter_icons.dart';
 class MainMenuPage extends StatelessWidget {
   static const route = "/";
   final GameStateProvider gameStateProvider;
-  const new({super.key, required this.gameStateProvider});
+  final SettingsProvider settingsProvider;
+  const new({
+    super.key,
+    required this.gameStateProvider,
+    required this.settingsProvider,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -26,6 +32,7 @@ class MainMenuPage extends StatelessWidget {
                 text: "Galaxy Defender",
                 ficon: GI.GiGalaxy,
                 iconSize: 32,
+                color: settingsProvider.settingsData.hudColor,
               ),
               NeonButton(
                 text: "Continue defense",

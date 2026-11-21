@@ -4,20 +4,21 @@ import 'package:flame/camera.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
+import 'package:galaxy_defender/data/providers/settings_provider.dart';
 import 'package:galaxy_defender/ui/game/components/map/map_enemi_counter.dart';
 import 'package:galaxy_defender/ui/game/components/map/player_position_hud.dart';
 
 class MiniMapComponent extends CameraComponent {
   double mapSize;
   double zoom;
-  Color color;
   GameStateProvider gameStateProvider;
+  SettingsProvider settingsProvider;
   MiniMapComponent({
     super.world,
     this.mapSize = 150,
     this.zoom = 0.05,
-    this.color = Colors.cyanAccent,
     required this.gameStateProvider,
+    required this.settingsProvider,
   });
   @override
   FutureOr<void> onLoad() {
@@ -32,7 +33,7 @@ class MiniMapComponent extends CameraComponent {
         size: Vector2.all(mapSize),
         anchor: Anchor.topLeft,
         paint: Paint()
-          ..color = color.withAlpha(50)
+          ..color = settingsProvider.settingsData.hudColor.withAlpha(50)
           ..style = PaintingStyle.fill
           ..strokeWidth = 2,
       ),
@@ -45,7 +46,9 @@ class MiniMapComponent extends CameraComponent {
         size: Vector2.all(mapSize),
         anchor: Anchor.topLeft,
         paint: Paint()
-          ..color = color.withValues(alpha: 0.4)
+          ..color = settingsProvider.settingsData.hudColor.withValues(
+            alpha: 0.4,
+          )
           ..style = PaintingStyle.stroke
           ..strokeWidth = 4
           ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 8),
@@ -59,7 +62,7 @@ class MiniMapComponent extends CameraComponent {
         size: Vector2.all(mapSize),
         anchor: Anchor.topLeft,
         paint: Paint()
-          ..color = color
+          ..color = settingsProvider.settingsData.hudColor
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2
           ..maskFilter = const MaskFilter.blur(BlurStyle.outer, 3),
@@ -73,15 +76,35 @@ class MiniMapComponent extends CameraComponent {
         size: Vector2.all(mapSize),
         anchor: Anchor.topLeft,
         paint: Paint()
-          ..color = color
+          ..color = settingsProvider.settingsData.hudColor
           ..style = PaintingStyle.stroke
           ..strokeWidth = 2,
       ),
     );
 
-    viewport.add(MapEnemiCounter(gameStateProvider: gameStateProvider));
     viewport.add(
-      PlayerPositionHud(gameStateProvider: gameStateProvider, mapSize: mapSize),
+      MapEnemiCounter(
+        gameStateProvider: gameStateProvider,
+        settingsProvider: settingsProvider,
+      ),
+    );
+    viewport.add(
+      PlayerPositionHud(
+        gameStateProvider: gameStateProvider,
+        mapSize: mapSize,
+        settingsProvider: settingsProvider,
+      ),
+    );
+    viewport.add(
+      FpsTextComponent(
+        position: Vector2(5, 20),
+        textRenderer: TextPaint(
+          style: TextStyle(
+            fontFamily: 'Audiowide',
+            color: settingsProvider.settingsData.hudColor,
+          ),
+        ),
+      ),
     );
 
     return super.onLoad();

@@ -3,12 +3,19 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
+import 'package:galaxy_defender/data/providers/settings_provider.dart';
 
 class PlayerPositionHud extends PositionComponent {
   late TextComponent _playerCoords;
   GameStateProvider gameStateProvider;
+  SettingsProvider settingsProvider;
+
   double mapSize;
-  PlayerPositionHud({required this.gameStateProvider, this.mapSize = 150});
+  PlayerPositionHud({
+    required this.gameStateProvider,
+    this.mapSize = 150,
+    required this.settingsProvider,
+  });
   @override
   FutureOr<void> onLoad() {
     position = Vector2(0, mapSize - 40);
@@ -16,7 +23,10 @@ class PlayerPositionHud extends PositionComponent {
       text:
           " X:${gameStateProvider.state.playerPosition.x.toInt()}\n Y:${gameStateProvider.state.playerPosition.y.toInt()}",
       textRenderer: TextPaint(
-        style: TextStyle(fontFamily: 'Audiowide', color: Colors.cyanAccent),
+        style: TextStyle(
+          fontFamily: 'Audiowide',
+          color: settingsProvider.settingsData.hudColor,
+        ),
       ),
     );
     add(_playerCoords);

@@ -6,6 +6,7 @@ import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
+import 'package:galaxy_defender/data/providers/settings_provider.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_button_overlay.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_overlay.dart';
@@ -15,8 +16,9 @@ import 'package:galaxy_defender/ui/game/components/ships/ship_component.dart';
 class GalaxyGame extends FlameGame
     with HasKeyboardHandlerComponents, HasGameReference, HasCollisionDetection {
   final GameStateProvider gameStateProvider;
-  late MiniMapComponent miniMapCamera;
-  GalaxyGame({required this.gameStateProvider});
+  final SettingsProvider settingsProvider;
+  late MiniMapComponent _miniMapCamera;
+  GalaxyGame({required this.gameStateProvider, required this.settingsProvider});
   @override
   Future<void> onLoad() async {
     await gameStateProvider.loadGameState();
@@ -27,13 +29,14 @@ class GalaxyGame extends FlameGame
     camera.viewfinder.anchor = Anchor.center;
     camera.setBounds(gameStateProvider.bounds);
     camera.viewport.position = Vector2.all(0);
-    miniMapCamera = MiniMapComponent(
+    _miniMapCamera = MiniMapComponent(
       world: world,
       gameStateProvider: gameStateProvider,
+      settingsProvider: settingsProvider,
     );
     add(world);
     add(camera);
-    add(miniMapCamera);
+    add(_miniMapCamera);
     await setGameStateFromProvider();
     return super.onLoad();
   }
@@ -98,7 +101,7 @@ class GalaxyGame extends FlameGame
       );
       await world.add(player);
       camera.follow(player);
-      miniMapCamera.follow(player);
+      _miniMapCamera.follow(player);
     }
   }
 

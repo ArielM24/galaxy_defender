@@ -14,7 +14,7 @@ enum ShipFaction {
   amethyst("amethyst", 0xff730fde),
   citrine("citrine", 0xFFFFD700),
   aquamarine("aquamarine", 0xff01e7ee),
-  opal("opal", 0xFFE8E4D8),
+  quartz("quartz", 0xFFE8E4D8),
   spinel("spinel", 0xFFe0218a),
   topazCrusher("topazCrusher", 0xFFFF8C00);
 

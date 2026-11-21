@@ -15,7 +15,7 @@ class NeonText extends StatelessWidget {
     this.icon,
     this.iconSize,
     this.ficon,
-    this.color = Colors.cyanAccent,
+    required this.color,
   });
 
   @override

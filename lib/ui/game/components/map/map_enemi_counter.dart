@@ -3,27 +3,35 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
+import 'package:galaxy_defender/data/providers/settings_provider.dart';
 
 class MapEnemiCounter extends PositionComponent {
   GameStateProvider gameStateProvider;
-  late TextComponent enemyCounter;
+  SettingsProvider settingsProvider;
+  late TextComponent _enemyCounter;
 
-  MapEnemiCounter({required this.gameStateProvider});
+  MapEnemiCounter({
+    required this.gameStateProvider,
+    required this.settingsProvider,
+  });
 
   @override
   FutureOr<void> onLoad() {
-    enemyCounter = TextComponent(
+    _enemyCounter = TextComponent(
       text: "Enemies: ${gameStateProvider.enemyCount}",
       textRenderer: TextPaint(
-        style: TextStyle(color: Colors.cyanAccent, fontFamily: 'Audiowide'),
+        style: TextStyle(
+          color: settingsProvider.settingsData.hudColor,
+          fontFamily: 'Audiowide',
+        ),
       ),
     );
-    add(enemyCounter);
+    add(_enemyCounter);
     gameStateProvider.addListener(updateCount);
     return super.onLoad();
   }
 
   void updateCount() {
-    enemyCounter.text = " Enemies: ${gameStateProvider.enemyCount}";
+    _enemyCounter.text = " Enemies: ${gameStateProvider.enemyCount}";
   }
 }

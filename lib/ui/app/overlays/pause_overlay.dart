@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
+import 'package:galaxy_defender/data/providers/settings_provider.dart';
 import 'package:galaxy_defender/ui/app/overlays/system_overlay.dart';
 import 'package:galaxy_defender/ui/app/pages/game_page.dart';
 import 'package:galaxy_defender/ui/app/pages/main_menu_page.dart';
@@ -10,11 +11,13 @@ import 'package:go_router/go_router.dart';
 class PauseOverlay extends StatelessWidget {
   static final String overlayKey = "PauseOverlay";
   final GameStateProvider gameStateProvider;
+  final SettingsProvider settingsProvider;
   final Function onRestartCallback;
   const PauseOverlay({
     super.key,
     required this.gameStateProvider,
     required this.onRestartCallback,
+    required this.settingsProvider,
   });
 
   @override
@@ -31,7 +34,11 @@ class PauseOverlay extends StatelessWidget {
               child: ListenableBuilder(
                 listenable: gameStateProvider,
                 builder: (context, child) {
-                  return NeonText(text: gameStateProvider.levelInfo, margin: 8);
+                  return NeonText(
+                    text: gameStateProvider.levelInfo,
+                    margin: 8,
+                    color: settingsProvider.settingsData.hudColor,
+                  );
                 },
               ),
             ),

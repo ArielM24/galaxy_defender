@@ -4,7 +4,12 @@ import 'package:go_router/go_router.dart';
 
 class NeonBackButon extends StatelessWidget {
   final String backRoute;
-  const NeonBackButon({super.key, required this.backRoute});
+  final Color color;
+  const NeonBackButon({
+    super.key,
+    required this.backRoute,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,6 +17,7 @@ class NeonBackButon extends StatelessWidget {
       alignment: Alignment.bottomRight,
       child: NeonButton(
         icon: Icons.arrow_back,
+        color: color,
         margin: 8,
         onTap: () {
           context.go(backRoute);

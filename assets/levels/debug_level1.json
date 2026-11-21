@@ -3,17 +3,17 @@
   "system": "0xdebug",
   "needsSector": "",
   "needsSystem": "",
-  "seed": 44563456,
+  "seed": 445634561,
   "width": 4800.0,
   "height": 4800.0,
   "generator": {
-    "minSpawners": 5,
-    "maxSpawners": 10,
-    "spawnLimit": 3,
+    "minSpawners": 10,
+    "maxSpawners": 15,
+    "spawnLimit": 5,
     "minSpawnerLife": 500,
     "maxSpawnerLife": 1200,
     "minSpawnFrecuency": 1.0,
     "maxSpawnFrecuency": 5.0,
-    "factions": ["emeraldTwilight", "rubyOmega", "sapphireDommination", "topazCrusher", "amethyst", "citrine", "aquamarine", "spinel", "opal"]
+    "factions": ["emeraldTwilight", "rubyOmega", "sapphireDommination", "topazCrusher", "amethyst", "citrine", "aquamarine", "spinel", "quartz"]
   }
 }
