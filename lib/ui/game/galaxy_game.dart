@@ -148,7 +148,17 @@ class GalaxyGame extends FlameGame
           shieldType: ShieldType.chevron,
           maxLife: 1000,
           hasInmunity: true,
-          attackFactions: [ShipFaction.amethyst],
+          attackFactions: [
+            ShipFaction.amethyst,
+            ShipFaction.aquamarine,
+            ShipFaction.citrine,
+            ShipFaction.emeraldTwilight,
+            ShipFaction.quartz,
+            ShipFaction.rubyOmega,
+            ShipFaction.sapphireDommination,
+            ShipFaction.spinel,
+            ShipFaction.topazCrusher,
+          ],
         ),
       );
       await world.add(player);

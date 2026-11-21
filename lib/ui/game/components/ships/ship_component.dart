@@ -116,6 +116,8 @@ class ShipComponent extends PositionComponent
         setTarget();
       },
     );
+
+    add(CircleHitbox(radius: data.radius));
     _changeIADirectionTimer = TimerComponent(
       repeat: true,
       period: 1.0,
@@ -328,6 +330,7 @@ class ShipComponent extends PositionComponent
     proj.data.velocity.setFrom(dir * data.projectileSpeed);
     proj.data.color = data.color;
     proj.data.target = target;
+    proj.data.attackFactions = data.attackFactions;
     proj.updateFromData();
     game.world.add(proj);
   }

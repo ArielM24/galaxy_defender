@@ -9,12 +9,15 @@ class ProjectileData {
   double size;
   ProjectileType type;
   ShipComponent? target;
+  List<ShipFaction> attackFactions;
   ProjectileData({
     required this.velocity,
     required this.color,
     required this.position,
     required this.size,
+    List<ShipFaction>? damageFaction,
     this.target,
     this.type = ProjectileType.cannon,
-  });
+  }) : attackFactions =
+           damageFaction ?? (target != null ? [target.data.faction] : []);
 }
