@@ -1,9 +1,10 @@
 import 'dart:async';
-import 'dart:math';
+import 'dart:math' hide Rectangle;
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flame/effects.dart';
+import 'package:flame/experimental.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:galaxy_defender/data/model/ship_data.dart';
@@ -15,7 +16,7 @@ class ShipComponent extends PositionComponent
     with KeyboardHandler, CollisionCallbacks, HasGameReference<GalaxyGame> {
   ShipData data;
 
-  Vector2 _direction = Vector2.zero();
+  Vector2 _currentDirection = Vector2.zero();
   ShipComponent({required this.data, super.key});
 
   @override
@@ -111,37 +112,68 @@ class ShipComponent extends PositionComponent
       var dx = 0.0;
       var dy = 0.0;
 
-      if (keysPressed.contains(LogicalKeyboardKey.keyA) ||
-          keysPressed.contains(LogicalKeyboardKey.arrowLeft)) {
+      if ((keysPressed.contains(LogicalKeyboardKey.keyA) ||
+              keysPressed.contains(LogicalKeyboardKey.arrowLeft)) &&
+          position.x > game.gameStateProvider.bounds.left) {
         dx -= 1;
       }
-      if (keysPressed.contains(LogicalKeyboardKey.keyD) ||
-          keysPressed.contains(LogicalKeyboardKey.arrowRight)) {
+      if ((keysPressed.contains(LogicalKeyboardKey.keyD) ||
+              keysPressed.contains(LogicalKeyboardKey.arrowRight)) &&
+          position.x < game.gameStateProvider.bounds.right) {
         dx += 1;
       }
-      if (keysPressed.contains(LogicalKeyboardKey.keyW) ||
-          keysPressed.contains(LogicalKeyboardKey.arrowUp)) {
+      if ((keysPressed.contains(LogicalKeyboardKey.keyW) ||
+              keysPressed.contains(LogicalKeyboardKey.arrowUp)) &&
+          position.y > game.gameStateProvider.bounds.top) {
         dy -= 1;
       }
-      if (keysPressed.contains(LogicalKeyboardKey.keyS) ||
-          keysPressed.contains(LogicalKeyboardKey.arrowDown)) {
+      if ((keysPressed.contains(LogicalKeyboardKey.keyS) ||
+              keysPressed.contains(LogicalKeyboardKey.arrowDown)) &&
+          position.y < game.gameStateProvider.bounds.bottom) {
         dy += 1;
       }
 
-      _direction = Vector2(dx, dy);
+      _currentDirection = Vector2(dx, dy);
     }
 
     return true;
   }
 
-  void addController(double dt) {
-    if (_direction != Vector2.zero()) {
-      position += _direction.normalized() * data.speed * dt;
+  bool isInBounds(Vector2 position) {
+    Rectangle bounds = game.gameStateProvider.bounds;
+
+    return position.x >= bounds.left &&
+        position.x + size.x <= bounds.right &&
+        position.y >= bounds.top &&
+        position.y + size.y <= bounds.bottom;
+  }
+
+  Vector2 calculateMovement(Vector2 dp, double dt) {
+    Vector2 p = position;
+    p += dp.normalized() * data.speed * dt;
+    if (isInBounds(p)) {
+      return p;
+    } else {
+      return clampPosition(p);
+    }
+  }
+
+  Vector2 clampPosition(Vector2 position) {
+    final bounds = game.gameStateProvider.bounds;
+    return Vector2(
+      position.x.clamp(bounds.left, bounds.right - size.x),
+      position.y.clamp(bounds.top, bounds.bottom - size.y),
+    );
+  }
+
+  void moveWithController(double dt) {
+    if (_currentDirection != Vector2.zero()) {
+      position += _currentDirection.normalized() * data.speed * dt;
     }
   }
 
   void addMovement(double dt) {
-    position += _direction * dt;
+    position += _currentDirection * dt;
     final hitX =
         position.x < game.gameStateProvider.bounds.left ||
         position.x > game.gameStateProvider.bounds.right;
@@ -151,7 +183,7 @@ class ShipComponent extends PositionComponent
     if (hitX || hitY) {
       // Nueva dirección aleatoria
       final angle = game.gameStateProvider.rng.nextDouble() * 2 * pi;
-      _direction = Vector2(cos(angle), sin(angle)) * data.speed;
+      _currentDirection = Vector2(cos(angle), sin(angle)) * data.speed;
       // Clamp para no salir
       position.x = position.x.clamp(
         game.gameStateProvider.bounds.left,
@@ -167,7 +199,7 @@ class ShipComponent extends PositionComponent
   @override
   void update(double dt) {
     if (data.hasController) {
-      addController(dt);
+      position = calculateMovement(_currentDirection, dt);
     } else {
       addMovement(dt);
     }
