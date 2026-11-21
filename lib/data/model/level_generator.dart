@@ -93,6 +93,7 @@ class LevelGenerator {
       arrows: rng.nextIntBetween(2, 9),
       radius: rng.nextIntBetween(8, 64) * 1.0,
       shieldType: ShieldType.values.random(rng),
+      type: ShipType.values.random(rng),
     );
   }
 }

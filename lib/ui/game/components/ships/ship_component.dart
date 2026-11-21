@@ -180,15 +180,30 @@ class ShipComponent extends PositionComponent
     if (!isInBounds(position)) {
       _changeIADirection();
     }
+
+    // static
+    if (data.type == ShipType.base || data.type == ShipType.miner) {
+      return position;
+    }
+
+    // dont care about enemy
+    if (data.type == ShipType.explorer) {
+      Vector2 p = normilizeDirection(_currentDirection, dt);
+      p += _separation() * (data.speed * dt * 2);
+      return _clampPosition(p);
+    }
+
     final toPlayer = game.gameStateProvider.state.playerPosition - position;
     final dist = toPlayer.length;
 
+    // goes directly to player
     if (data.type == ShipType.kamikaze &&
         (dist <= data.detectRadius || data.targetPlayer)) {
       data.targetPlayer = true;
       _currentDirection = toPlayer / dist;
     }
 
+    // follows player at some distance
     if (data.type == ShipType.soldier &&
         (dist <= data.detectRadius || data.targetPlayer)) {
       data.targetPlayer = true;
@@ -210,9 +225,7 @@ class ShipComponent extends PositionComponent
     }
 
     Vector2 p = normilizeDirection(_currentDirection, dt);
-
     p += _separation() * (data.speed * dt * 2);
-
     return _clampPosition(p);
   }
 
