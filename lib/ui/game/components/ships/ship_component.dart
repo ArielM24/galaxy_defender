@@ -194,6 +194,7 @@ class ShipComponent extends PositionComponent
   void update(double dt) {
     if (data.hasController) {
       position = _calculatePlayerMovement(_currentDirection, dt);
+      game.gameStateProvider.updatePlayerPosition(position);
     } else {
       position = calculateIAMovement(dt);
     }

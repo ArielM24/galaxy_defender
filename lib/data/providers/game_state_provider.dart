@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/game_state_data.dart';
@@ -18,7 +19,10 @@ class GameStateProvider extends ChangeNotifier {
   GameStateProvider({required this.state, this.useLog = true});
 
   GameStateProvider.initial()
-    : state = GameStateData(levelData: LevelData()),
+    : state = GameStateData(
+        levelData: LevelData(),
+        playerPosition: Vector2.zero(),
+      ),
       useLog = true {
     debugPrint("initProvider");
   }
@@ -63,7 +67,10 @@ class GameStateProvider extends ChangeNotifier {
   }
 
   Future<void> loadGameState() async {
-    state = GameStateData(levelData: await LevelRepository.getTestLevelData());
+    state = GameStateData(
+      levelData: await LevelRepository.getTestLevelData(),
+      playerPosition: Vector2.zero(),
+    );
     log("loadGame");
     notifyListeners();
   }
@@ -107,6 +114,11 @@ class GameStateProvider extends ChangeNotifier {
 
   void enemiesCleared() {
     state.enemyCount = 0;
+    notifyListeners();
+  }
+
+  void updatePlayerPosition(Vector2 pos) {
+    state.playerPosition = pos;
     notifyListeners();
   }
 

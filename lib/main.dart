@@ -1,3 +1,4 @@
+import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/model/game_state_data.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
@@ -10,7 +11,10 @@ import 'package:go_router/go_router.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   GameStateProvider gameStateProvider = GameStateProvider(
-    state: GameStateData(levelData: await LevelRepository.getTestLevelData()),
+    state: GameStateData(
+      levelData: await LevelRepository.getTestLevelData(),
+      playerPosition: Vector2.zero(),
+    ),
   );
   GoRouter router = GoRouter(
     initialLocation: MainMenuPage.route,

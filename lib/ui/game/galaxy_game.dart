@@ -9,7 +9,6 @@ import 'package:galaxy_defender/data/providers/game_state_provider.dart';
 import 'package:galaxy_defender/data/util/enums.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_button_overlay.dart';
 import 'package:galaxy_defender/ui/app/overlays/pause_overlay.dart';
-import 'package:galaxy_defender/ui/app/overlays/system_overlay.dart';
 import 'package:galaxy_defender/ui/game/components/map/mini_map_component.dart';
 import 'package:galaxy_defender/ui/game/components/ships/ship_component.dart';
 

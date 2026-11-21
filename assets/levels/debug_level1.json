@@ -4,6 +4,8 @@
   "needsSector": "",
   "needsSystem": "",
   "seed": 44563456,
+  "width": 4800.0,
+  "height": 4800.0,
   "generator": {
     "minSpawners": 5,
     "maxSpawners": 10,

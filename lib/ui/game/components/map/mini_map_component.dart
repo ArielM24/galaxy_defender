@@ -5,6 +5,7 @@ import 'package:flame/components.dart';
 import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
 import 'package:galaxy_defender/ui/game/components/map/map_enemi_counter.dart';
+import 'package:galaxy_defender/ui/game/components/map/player_position_hud.dart';
 
 class MiniMapComponent extends CameraComponent {
   double mapSize;
@@ -79,6 +80,9 @@ class MiniMapComponent extends CameraComponent {
     );
 
     viewport.add(MapEnemiCounter(gameStateProvider: gameStateProvider));
+    viewport.add(
+      PlayerPositionHud(gameStateProvider: gameStateProvider, mapSize: mapSize),
+    );
 
     return super.onLoad();
   }
