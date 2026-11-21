@@ -84,6 +84,10 @@ class LevelGenerator {
 
   ShipData generate({double? x, double? y, required Random rng}) {
     ShipFaction shipFaction = ShipFaction.values.byName(factions.random(rng));
+    ShipType type = ShipType.values.random(rng);
+    if (type == ShipType.player) {
+      type = ShipType.soldier;
+    }
     return ShipData(
       faction: shipFaction,
       shipColor: shipFaction.color,
@@ -93,7 +97,7 @@ class LevelGenerator {
       arrows: rng.nextIntBetween(2, 9),
       radius: rng.nextIntBetween(8, 64) * 1.0,
       shieldType: ShieldType.values.random(rng),
-      type: ShipType.values.random(rng),
+      type: type,
       attackFactions: [ShipFaction.galaxyFreedom],
     );
   }

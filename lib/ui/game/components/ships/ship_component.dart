@@ -20,6 +20,7 @@ class ShipComponent extends PositionComponent
   late TimerComponent _changeIADirectionTimer;
   late TimerComponent _shootTargetTimer;
   late TimerComponent _chooseTargetTimer;
+  late TimerComponent _updatePlayerPositionTimer;
 
   Vector2 _currentDirection = Vector2.zero();
   ShipComponent({required this.data, super.key});
@@ -131,9 +132,23 @@ class ShipComponent extends PositionComponent
         _shootToTarget();
       },
     );
+
     add(_chooseTargetTimer);
     add(_changeIADirectionTimer);
     add(_shootTargetTimer);
+    if (data.type == ShipType.player) {
+      _updatePlayerPositionTimer = TimerComponent(
+        period: 0.1,
+        autoStart: true,
+        repeat: true,
+        onTick: () {
+          if (data.type == ShipType.player) {
+            game.gameStateProvider.updatePlayerPosition(position);
+          }
+        },
+      );
+      add(_updatePlayerPositionTimer);
+    }
     return super.onLoad();
   }
 
@@ -285,7 +300,6 @@ class ShipComponent extends PositionComponent
   void update(double dt) {
     if (data.hasController) {
       position = _calculatePlayerMovement(_currentDirection, dt);
-      game.gameStateProvider.updatePlayerPosition(position);
     } else {
       position = calculateIAMovement(dt);
     }
@@ -293,7 +307,7 @@ class ShipComponent extends PositionComponent
 
   void _shootToTarget() {
     ShipComponent? target = getCurrentTarget();
-    if (target == null) {
+    if (target == null || data.type == ShipType.kamikaze) {
       return;
     }
     final targetPos = target.position;
@@ -313,6 +327,7 @@ class ShipComponent extends PositionComponent
     proj.position.setFrom(spawnPos);
     proj.data.velocity.setFrom(dir * data.projectileSpeed);
     proj.data.color = data.color;
+    proj.data.target = target;
     proj.updateFromData();
     game.world.add(proj);
   }

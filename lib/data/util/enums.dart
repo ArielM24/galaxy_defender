@@ -1,10 +1,10 @@
 enum ShipType {
-  player,
+  soldier,
   miner,
   explorer,
-  soldier,
   fabricator,
   kamikaze,
+  player,
   //  transport,
 }
 

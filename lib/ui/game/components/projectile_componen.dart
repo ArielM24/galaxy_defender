@@ -75,8 +75,8 @@ class ProjectileComponent extends PositionComponent
     super.update(dt);
     position += data.velocity * dt;
 
-    final playerPos = game.gameStateProvider.state.playerPosition;
-    if ((position - playerPos).length <= 12) {
+    if (data.target != null &&
+        (position - (data.target!.position)).length <= 12) {
       game.gameStateProvider.damagePlayer(10);
       removeFromParent();
       return;
