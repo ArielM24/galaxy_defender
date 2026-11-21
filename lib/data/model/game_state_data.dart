@@ -5,7 +5,7 @@ import 'package:galaxy_defender/data/util/enums.dart';
 
 class GameStateData {
   int score;
-  int life;
+  double life;
   GameStatus gameStatus;
   String levelName;
   LevelData levelData;
@@ -15,7 +15,7 @@ class GameStateData {
 
   GameStateData({
     this.score = 0,
-    this.life = 100,
+    this.life = 100.0,
     this.levelName = "debug",
     this.gameStatus = GameStatus.running,
     required this.levelData,

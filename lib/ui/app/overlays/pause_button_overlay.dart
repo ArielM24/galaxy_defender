@@ -28,7 +28,7 @@ class PauseButtonOverlay extends StatelessWidget {
             color: settingsProvider.settingsData.hudColor,
             icon: icon,
             onTap: () {
-              gameStateProvider.pauseGame();
+              gameStateProvider.toggleGamePaused();
             },
           );
         },

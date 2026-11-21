@@ -50,13 +50,18 @@ class GameStateProvider extends ChangeNotifier {
     return ships;
   }
 
-  void setLife(int life) {
+  void setLife(double life) {
     state.life = life;
     log("setLife");
     notifyListeners();
   }
 
-  void pauseGame() {
+  void damagePlayer(double damage) {
+    state.life -= damage;
+    notifyListeners();
+  }
+
+  void toggleGamePaused() {
     if (isPaused) {
       state.gameStatus = GameStatus.running;
     } else if (isRunning) {

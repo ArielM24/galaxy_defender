@@ -269,7 +269,11 @@ class ShipComponent extends PositionComponent
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
-    if (other is ShipComponent) {}
+    if (other is ShipComponent && (other.key == ComponentKey.named("player"))) {
+      removeFromParent();
+      game.gameStateProvider.damagePlayer(data.attack);
+      game.gameStateProvider.enemyRemoved();
+    }
     super.onCollision(intersectionPoints, other);
   }
 

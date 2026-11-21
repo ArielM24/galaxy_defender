@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:galaxy_defender/data/providers/game_state_provider.dart';
 import 'package:galaxy_defender/data/providers/settings_provider.dart';
 import 'package:galaxy_defender/ui/game/components/map/map_enemi_counter.dart';
+import 'package:galaxy_defender/ui/game/components/map/player_life_hud.dart';
 import 'package:galaxy_defender/ui/game/components/map/player_position_hud.dart';
 
 class MiniMapComponent extends CameraComponent {
@@ -13,6 +14,8 @@ class MiniMapComponent extends CameraComponent {
   double zoom;
   GameStateProvider gameStateProvider;
   SettingsProvider settingsProvider;
+  FpsTextComponent? _fpsTextComponent;
+  PlayerPositionHud? _positionHud;
   MiniMapComponent({
     super.world,
     this.mapSize = 150,
@@ -88,25 +91,50 @@ class MiniMapComponent extends CameraComponent {
         settingsProvider: settingsProvider,
       ),
     );
+
     viewport.add(
-      PlayerPositionHud(
+      PlayerLifeHud(
         gameStateProvider: gameStateProvider,
-        mapSize: mapSize,
         settingsProvider: settingsProvider,
       ),
     );
-    viewport.add(
-      FpsTextComponent(
-        position: Vector2(5, 20),
+    updateHud();
+    settingsProvider.addListener(updateHud);
+    return super.onLoad();
+  }
+
+  void updateHud() {
+    updateFPS();
+    updatePlayerPosition();
+  }
+
+  void updatePlayerPosition() {
+    if (settingsProvider.settingsData.showPlayerPosition) {
+      _positionHud ??= PlayerPositionHud(
+        gameStateProvider: gameStateProvider,
+        mapSize: mapSize,
+        settingsProvider: settingsProvider,
+      );
+      viewport.add(_positionHud!);
+    } else if (_positionHud != null) {
+      viewport.remove(_positionHud!);
+    }
+  }
+
+  void updateFPS() {
+    if (settingsProvider.settingsData.showFPS) {
+      _fpsTextComponent ??= FpsTextComponent(
+        position: Vector2(5, 40),
         textRenderer: TextPaint(
           style: TextStyle(
             fontFamily: 'Audiowide',
             color: settingsProvider.settingsData.hudColor,
           ),
         ),
-      ),
-    );
-
-    return super.onLoad();
+      );
+      viewport.add(_fpsTextComponent!);
+    } else if (_fpsTextComponent != null) {
+      viewport.remove(_fpsTextComponent!);
+    }
   }
 }

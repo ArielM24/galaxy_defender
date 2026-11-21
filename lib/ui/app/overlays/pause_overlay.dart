@@ -7,6 +7,7 @@ import 'package:galaxy_defender/ui/app/pages/main_menu_page.dart';
 import 'package:galaxy_defender/ui/widgets/neon_button.dart';
 import 'package:galaxy_defender/ui/widgets/neon_text.dart';
 import 'package:go_router/go_router.dart';
+import 'package:ultimate_flutter_icons/icons/gi.dart';
 
 class PauseOverlay extends StatelessWidget {
   static final String overlayKey = "PauseOverlay";
@@ -48,7 +49,27 @@ class PauseOverlay extends StatelessWidget {
               icon: Icons.play_arrow_outlined,
               color: Colors.deepPurpleAccent,
               onTap: () {
-                gameStateProvider.pauseGame();
+                gameStateProvider.toggleGamePaused();
+              },
+            ),
+            NeonButton(
+              text: "Toggle FPS",
+              margin: 8,
+              icon: Icons.addchart_rounded,
+              color: Colors.cyanAccent,
+              onTap: () {
+                settingsProvider.toggleFPS();
+                gameStateProvider.toggleGamePaused();
+              },
+            ),
+            NeonButton(
+              text: "Toggle Position",
+              margin: 8,
+              ficon: GI.GiCompass,
+              color: Colors.yellowAccent,
+              onTap: () {
+                settingsProvider.togglePlayerPosition();
+                gameStateProvider.toggleGamePaused();
               },
             ),
             NeonButton(

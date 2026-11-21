@@ -2,5 +2,11 @@ import 'package:flutter/material.dart';
 
 class SettingsData {
   Color hudColor;
-  SettingsData({this.hudColor = Colors.indigoAccent});
+  bool showFPS;
+  bool showPlayerPosition;
+  SettingsData({
+    this.hudColor = Colors.indigoAccent,
+    this.showFPS = false,
+    this.showPlayerPosition = true,
+  });
 }
