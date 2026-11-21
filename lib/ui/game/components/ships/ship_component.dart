@@ -15,6 +15,7 @@ import 'package:galaxy_defender/ui/util/ship_utils.dart';
 class ShipComponent extends PositionComponent
     with KeyboardHandler, CollisionCallbacks, HasGameReference<GalaxyGame> {
   ShipData data;
+  double _timeToChangeIADirection = 0;
 
   Vector2 _currentDirection = Vector2.zero();
   ShipComponent({required this.data, super.key});
@@ -106,6 +107,7 @@ class ShipComponent extends PositionComponent
     return super.onLoad();
   }
 
+  //move with player controls
   @override
   bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
     if (data.hasController) {
@@ -148,17 +150,17 @@ class ShipComponent extends PositionComponent
         position.y + size.y <= bounds.bottom;
   }
 
-  Vector2 calculateMovement(Vector2 dp, double dt) {
+  Vector2 _calculatePlayerMovement(Vector2 dp, double dt) {
     Vector2 p = position;
     p += dp.normalized() * data.speed * dt;
+    p = _clampPosition(p);
     if (isInBounds(p)) {
       return p;
-    } else {
-      return clampPosition(p);
     }
+    return position;
   }
 
-  Vector2 clampPosition(Vector2 position) {
+  Vector2 _clampPosition(Vector2 position) {
     final bounds = game.gameStateProvider.bounds;
     return Vector2(
       position.x.clamp(bounds.left, bounds.right - size.x),
@@ -166,42 +168,34 @@ class ShipComponent extends PositionComponent
     );
   }
 
-  void moveWithController(double dt) {
-    if (_currentDirection != Vector2.zero()) {
-      position += _currentDirection.normalized() * data.speed * dt;
-    }
+  void _changeIADirection() {
+    final angle = game.gameStateProvider.rng.nextDouble() * 2 * pi;
+    _currentDirection = Vector2(cos(angle), sin(angle));
+    _timeToChangeIADirection = 2 + game.gameStateProvider.rng.nextDouble() * 4;
   }
 
-  void addMovement(double dt) {
-    position += _currentDirection * dt;
-    final hitX =
-        position.x < game.gameStateProvider.bounds.left ||
-        position.x > game.gameStateProvider.bounds.right;
-    final hitY =
-        position.y < game.gameStateProvider.bounds.top ||
-        position.y > game.gameStateProvider.bounds.bottom;
-    if (hitX || hitY) {
-      // Nueva dirección aleatoria
-      final angle = game.gameStateProvider.rng.nextDouble() * 2 * pi;
-      _currentDirection = Vector2(cos(angle), sin(angle)) * data.speed;
-      // Clamp para no salir
-      position.x = position.x.clamp(
-        game.gameStateProvider.bounds.left,
-        game.gameStateProvider.bounds.right,
-      );
-      position.y = position.y.clamp(
-        game.gameStateProvider.bounds.top,
-        game.gameStateProvider.bounds.bottom,
-      );
+  Vector2 calculateIAMovement(double dt) {
+    Vector2 p = position;
+    _timeToChangeIADirection -= dt;
+    if (_timeToChangeIADirection <= 0) {
+      _changeIADirection();
     }
+
+    p += _currentDirection * (data.speed * dt);
+    p = _clampPosition(p);
+
+    if (!isInBounds(p)) {
+      _changeIADirection();
+    }
+    return p;
   }
 
   @override
   void update(double dt) {
     if (data.hasController) {
-      position = calculateMovement(_currentDirection, dt);
+      position = _calculatePlayerMovement(_currentDirection, dt);
     } else {
-      addMovement(dt);
+      position = calculateIAMovement(dt);
     }
   }
 
