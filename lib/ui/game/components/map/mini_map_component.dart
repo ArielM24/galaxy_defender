@@ -116,8 +116,9 @@ class MiniMapComponent extends CameraComponent {
         settingsProvider: settingsProvider,
       );
       await viewport.add(_positionHud!);
-    } else if (_positionHud != null) {
+    } else if (_positionHud != null && _positionHud!.parent != null) {
       viewport.remove(_positionHud!);
+      _positionHud = null;
     }
   }
 
@@ -133,8 +134,9 @@ class MiniMapComponent extends CameraComponent {
         ),
       );
       await viewport.add(_fpsTextComponent!);
-    } else if (_fpsTextComponent != null) {
+    } else if (_fpsTextComponent != null && _fpsTextComponent!.parent != null) {
       viewport.remove(_fpsTextComponent!);
+      _fpsTextComponent = null;
     }
   }
 }
