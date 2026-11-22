@@ -341,7 +341,10 @@ class ShipComponent extends PositionComponent
       for (ShipComponent ship
           in game.gameStateProvider.state.ships[data.currentFactionTarget]!) {
         if (ship.data.key == data.currentKeyTarget) {
-          return ship;
+          if ((ship.position - position).length < data.detectRadius) {
+            return ship;
+          }
+          break;
         }
       }
     }
