@@ -71,6 +71,16 @@ class PauseOverlay extends StatelessWidget {
               },
             ),
             NeonButton(
+              text: "Track new ship",
+              margin: 8,
+              ficon: GI.GiCompass,
+              color: Colors.orange,
+              onTap: () {
+                gameStateProvider.trackRandomShip();
+                gameStateProvider.toggleGamePaused();
+              },
+            ),
+            NeonButton(
               text: "Restart game",
               margin: 8,
               color: Colors.redAccent,

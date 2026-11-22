@@ -63,6 +63,14 @@ class GameStateProvider extends ChangeNotifier {
     return trackedShip != null ? trackedShip!.position : Vector2.zero();
   }
 
+  int getCurrentShips() {
+    int count = 0;
+    for (final entry in state.ships.entries) {
+      count += entry.value.length;
+    }
+    return count;
+  }
+
   void setTrackingShip({required ShipComponent ship, bool notify = true}) {
     trackedShip = ship;
     debugPrint(

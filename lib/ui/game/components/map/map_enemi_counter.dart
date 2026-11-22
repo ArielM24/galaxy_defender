@@ -18,7 +18,7 @@ class MapEnemiCounter extends PositionComponent {
   @override
   FutureOr<void> onLoad() {
     _enemyCounter = TextComponent(
-      text: "Enemies: ${gameStateProvider.enemyCount}",
+      text: getText(),
       textRenderer: TextPaint(
         style: TextStyle(
           color: settingsProvider.settingsData.hudColor,
@@ -32,6 +32,10 @@ class MapEnemiCounter extends PositionComponent {
   }
 
   void updateCount() {
-    _enemyCounter.text = " Enemies: ${gameStateProvider.enemyCount}";
+    _enemyCounter.text = getText();
+  }
+
+  String getText() {
+    return " Ships: ${gameStateProvider.getCurrentShips()}";
   }
 }
