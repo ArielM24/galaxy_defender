@@ -20,7 +20,7 @@ class PlayerLifeHud extends PositionComponent {
   FutureOr<void> onLoad() {
     position = Vector2(0, 20);
     _playerHp = TextComponent(
-      text: " HP:${gameStateProvider.state.life.toInt()}",
+      text: generateText(),
       textRenderer: TextPaint(
         style: TextStyle(
           fontFamily: 'Audiowide',
@@ -34,6 +34,10 @@ class PlayerLifeHud extends PositionComponent {
   }
 
   void updateLife() {
-    _playerHp.text = " HP:${gameStateProvider.state.life.toInt()}";
+    _playerHp.text = generateText();
+  }
+
+  String generateText() {
+    return " HP:${gameStateProvider.getTrackedShipLife().toInt()}";
   }
 }

@@ -20,7 +20,6 @@ class ShipComponent extends PositionComponent
   late TimerComponent _changeIADirectionTimer;
   late TimerComponent _shootTargetTimer;
   late TimerComponent _chooseTargetTimer;
-  late TimerComponent _updatePlayerPositionTimer;
 
   Vector2 _currentDirection = Vector2.zero();
   ShipComponent({required this.data, super.key});
@@ -128,7 +127,7 @@ class ShipComponent extends PositionComponent
     );
     _shootTargetTimer = TimerComponent(
       repeat: true,
-      period: 1.0,
+      period: data.rateOfFire,
       autoStart: true,
       onTick: () {
         _shootToTarget();
@@ -138,19 +137,7 @@ class ShipComponent extends PositionComponent
     add(_chooseTargetTimer);
     add(_changeIADirectionTimer);
     add(_shootTargetTimer);
-    if (data.type == ShipType.player) {
-      _updatePlayerPositionTimer = TimerComponent(
-        period: 0.1,
-        autoStart: true,
-        repeat: true,
-        onTick: () {
-          if (data.type == ShipType.player) {
-            game.gameStateProvider.updatePlayerPosition(position);
-          }
-        },
-      );
-      add(_updatePlayerPositionTimer);
-    }
+
     return super.onLoad();
   }
 
@@ -331,6 +318,7 @@ class ShipComponent extends PositionComponent
     proj.data.color = data.color;
     proj.data.target = target;
     proj.data.attackFactions = data.attackFactions;
+    proj.data.damage = data.attack;
     proj.updateFromData();
     game.world.add(proj);
   }
@@ -349,6 +337,17 @@ class ShipComponent extends PositionComponent
       }
     }
     return null;
+  }
+
+  void damage(double damage) {
+    if (data.hasInmunity) {
+      return;
+    }
+    data.currentLife -= damage;
+    if (data.currentLife <= 0) {
+      game.gameStateProvider.removeShip(ship: this);
+      removeFromParent();
+    }
   }
 
   void setTarget() {
@@ -393,7 +392,7 @@ class ShipComponent extends PositionComponent
         data.type == ShipType.kamikaze &&
         (other.data.key == data.currentKeyTarget)) {
       game.gameStateProvider.damagePlayer(data.attack);
-      game.gameStateProvider.shipRemoved(ship: this);
+      game.gameStateProvider.removeShip(ship: this);
       removeFromParent();
     }
     super.onCollision(intersectionPoints, other);

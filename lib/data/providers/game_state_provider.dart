@@ -15,6 +15,7 @@ class GameStateProvider extends ChangeNotifier {
   GameStateData state;
   final bool useLog;
   bool _isSavingGame = false;
+  ShipComponent? trackedShip;
   final parallaxOffset = ValueNotifier<Offset>(Offset.zero);
   GameStateProvider({required this.state, this.useLog = true});
 
@@ -42,6 +43,47 @@ class GameStateProvider extends ChangeNotifier {
 
   String get levelInfo =>
       "Galactic Sector: ${state.levelData.sector}\nStelar System: ${state.levelData.system}\nSeed: ${state.levelData.seed}";
+
+  ShipComponent? getShip(String key) {
+    for (final faction in state.ships.keys) {
+      for (final ship in state.ships[faction]!) {
+        if (ship.data.key == key) {
+          return ship;
+        }
+      }
+    }
+    return null;
+  }
+
+  double getTrackedShipLife() {
+    return trackedShip != null ? trackedShip!.data.currentLife : 0;
+  }
+
+  Vector2 getTrackedShipPosition() {
+    return trackedShip != null ? trackedShip!.position : Vector2.zero();
+  }
+
+  void setTrackingShip({required ShipComponent ship, bool notify = true}) {
+    trackedShip = ship;
+    debugPrint(
+      "Tracking: [${ship.data.key}, ${ship.data.faction} ${ship.data.type} XY:${ship.position} HP:${ship.data.currentLife}]",
+    );
+    if (notify) {
+      notifyListeners();
+    }
+  }
+
+  void damageShip({required ShipComponent ship, required double damage}) {
+    ShipComponent? s = getShip(ship.data.key);
+    if (s == null) {
+      return;
+    }
+    s.data.currentLife -= damage;
+    if (s.data.currentLife <= 0) {
+      removeShip(ship: ship, notify: false);
+    }
+    notifyListeners();
+  }
 
   void setLife(double life) {
     state.life = life;
@@ -93,6 +135,7 @@ class GameStateProvider extends ChangeNotifier {
         '│ Life: ${state.life}\n'
         '│ Saving: $_isSavingGame\n'
         '│ Status: ${state.gameStatus.name}\n'
+        '│ Tracked ship: ${trackedShip?.data.key}\n'
         '$_logShips'
         '│${state.levelData.toMap()}\n'
         '└────────────────────────────────',
@@ -100,7 +143,7 @@ class GameStateProvider extends ChangeNotifier {
     }
   }
 
-  void shipAdded({required ShipComponent ship, bool enemy = true}) {
+  void addShip({required ShipComponent ship, bool enemy = true}) {
     if (state.ships.containsKey(ship.data.faction)) {
       state.ships[ship.data.faction]!.add(ship);
     } else {
@@ -112,12 +155,35 @@ class GameStateProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void shipRemoved({required ShipComponent ship, bool enemy = true}) {
+  void removeShip({
+    required ShipComponent ship,
+    bool enemy = true,
+    bool notify = true,
+  }) {
     bool removed = state.ships[ship.data.faction]?.remove(ship) ?? false;
-    if (removed && enemy) {
-      state.enemyCount--;
-      notifyListeners();
+    if (removed) {
+      if (trackedShip != null && trackedShip!.data.key == ship.data.key) {
+        trackRandomShip();
+      }
+      if (enemy) {
+        state.enemyCount--;
+      }
+      if (notify) {
+        notifyListeners();
+      }
     }
+  }
+
+  void trackRandomShip({bool notify = true}) {
+    final faction = state.ships.keys.elementAt(
+      rng.nextInt(state.ships.keys.length),
+    );
+    setTrackingShip(
+      notify: notify,
+      ship: state.ships[faction]!.elementAt(
+        rng.nextInt(state.ships[faction]!.length),
+      ),
+    );
   }
 
   void enemiesCleared() {
@@ -128,6 +194,10 @@ class GameStateProvider extends ChangeNotifier {
 
   void updatePlayerPosition(Vector2 pos) {
     state.playerPosition = pos;
+    notifyListeners();
+  }
+
+  void updateListeners() {
     notifyListeners();
   }
 

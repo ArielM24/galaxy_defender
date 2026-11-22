@@ -20,8 +20,7 @@ class PlayerPositionHud extends PositionComponent {
   FutureOr<void> onLoad() {
     position = Vector2(0, mapSize - 40);
     _playerCoords = TextComponent(
-      text:
-          " X:${gameStateProvider.state.playerPosition.x.toInt()}\n Y:${gameStateProvider.state.playerPosition.y.toInt()}",
+      text: generateText(),
       textRenderer: TextPaint(
         style: TextStyle(
           fontFamily: 'Audiowide',
@@ -35,7 +34,10 @@ class PlayerPositionHud extends PositionComponent {
   }
 
   void updatePosition() {
-    _playerCoords.text =
-        " X:${gameStateProvider.state.playerPosition.x.toInt()}\n Y:${gameStateProvider.state.playerPosition.y.toInt()}";
+    _playerCoords.text = generateText();
+  }
+
+  String generateText() {
+    return " X:${gameStateProvider.trackedShip?.x.toInt()}\n Y:${gameStateProvider.trackedShip?.y.toInt()}";
   }
 }

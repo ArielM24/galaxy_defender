@@ -7,12 +7,14 @@ class ProjectileData {
   Vector2 velocity, position;
   Color color;
   double size;
+  double damage;
   ProjectileType type;
   ShipComponent? target;
   List<ShipFaction> attackFactions;
   ProjectileData({
     required this.velocity,
     required this.color,
+    this.damage = 10,
     required this.position,
     required this.size,
     List<ShipFaction>? damageFaction,

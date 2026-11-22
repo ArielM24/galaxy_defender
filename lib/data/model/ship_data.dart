@@ -47,7 +47,7 @@ class ShipData {
     this.currentKeyTarget = "",
     this.currentFactionTarget,
     this.maxLife = 100,
-    this.attack = 10,
+    this.attack = 50,
     this.speed = 150,
     this.targetPlayer = false,
     this.hasInmunity = false,

@@ -22,6 +22,8 @@ class GalaxyGame extends FlameGame
   final SettingsProvider settingsProvider;
   late MiniMapComponent _miniMapCamera;
   final SpatialHash shipsSpatialHash = SpatialHash(50);
+  late TimerComponent _checkTrackedShipTimer;
+  late TimerComponent _updatePositionTimer;
   final Map<ShipFaction, SpatialHash> factionSpatialHashes = {
     ShipFaction.amethyst: SpatialHash(50),
     ShipFaction.aquamarine: SpatialHash(50),
@@ -66,6 +68,24 @@ class GalaxyGame extends FlameGame
     add(world);
     add(camera);
     add(_miniMapCamera);
+    _checkTrackedShipTimer = TimerComponent(
+      period: 2.0,
+      autoStart: true,
+      repeat: true,
+      onTick: () {
+        checkTrackedShip();
+      },
+    );
+    _updatePositionTimer = TimerComponent(
+      period: 0.5,
+      autoStart: true,
+      repeat: true,
+      onTick: () {
+        gameStateProvider.updateListeners();
+      },
+    );
+    add(_checkTrackedShipTimer);
+    add(_updatePositionTimer);
     await setGameStateFromProvider();
     return super.onLoad();
   }
@@ -147,7 +167,7 @@ class GalaxyGame extends FlameGame
           arrows: 3,
           shieldType: ShieldType.chevron,
           maxLife: 1000,
-          hasInmunity: true,
+          hasInmunity: false,
           attackFactions: [
             ShipFaction.amethyst,
             ShipFaction.aquamarine,
@@ -162,10 +182,21 @@ class GalaxyGame extends FlameGame
         ),
       );
       await world.add(player);
-      gameStateProvider.shipAdded(ship: player, enemy: false);
-      gameStateProvider.setLife(player.data.currentLife);
-      camera.follow(player);
-      _miniMapCamera.follow(player);
+      gameStateProvider.addShip(ship: player, enemy: false);
+      trackShip(player);
+    }
+  }
+
+  void trackShip(ShipComponent ship) {
+    camera.follow(ship);
+    _miniMapCamera.follow(ship);
+    gameStateProvider.setTrackingShip(ship: ship);
+  }
+
+  void checkTrackedShip() {
+    if (gameStateProvider.trackedShip != null) {
+      camera.follow(gameStateProvider.trackedShip!);
+      _miniMapCamera.follow(gameStateProvider.trackedShip!);
     }
   }
 
@@ -188,7 +219,7 @@ class GalaxyGame extends FlameGame
               rng: gameStateProvider.rng,
             ),
           );
-          gameStateProvider.shipAdded(ship: ship);
+          gameStateProvider.addShip(ship: ship);
           return ship;
         },
       );

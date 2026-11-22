@@ -81,13 +81,6 @@ class ProjectileComponent extends PositionComponent
     super.update(dt);
     position += data.velocity * dt;
 
-    // if (data.target != null &&
-    //     (position - (data.target!.position)).length <= 12) {
-    //   game.gameStateProvider.damagePlayer(10);
-    //   removeFromParent();
-    //   return;
-    // }
-
     // Eliminar si sale de bounds
     final bounds = game.gameStateProvider.bounds;
     if (position.x < bounds.left - 50 ||
@@ -106,6 +99,7 @@ class ProjectileComponent extends PositionComponent
     if (other is ShipComponent &&
         data.attackFactions.contains(other.data.faction)) {
       removeFromParent();
+      other.damage(data.damage);
     }
     super.onCollisionStart(intersectionPoints, other);
   }
