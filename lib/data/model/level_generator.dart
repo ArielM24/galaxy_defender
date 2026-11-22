@@ -98,7 +98,32 @@ class LevelGenerator {
       radius: rng.nextIntBetween(8, 64) * 1.0,
       shieldType: ShieldType.values.random(rng),
       type: type,
-      attackFactions: [ShipFaction.galaxyFreedom],
+      attackFactions: getRandomFactionsToAttack(
+        ommit: [shipFaction],
+        include: [ShipFaction.galaxyFreedom],
+        rng: rng,
+      ),
     );
+  }
+
+  static List<ShipFaction> getRandomFactionsToAttack({
+    List<ShipFaction> ommit = const [],
+    List<ShipFaction> include = const [],
+    required Random rng,
+  }) {
+    List<ShipFaction> factions = [];
+    for (final f in ShipFaction.values) {
+      if (ommit.contains(f)) {
+        continue;
+      }
+      if (include.contains(f)) {
+        factions.add(f);
+        continue;
+      }
+      if (rng.nextBool()) {
+        factions.add(f);
+      }
+    }
+    return factions;
   }
 }

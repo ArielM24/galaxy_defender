@@ -162,6 +162,9 @@ class GameStateProvider extends ChangeNotifier {
   }) {
     bool removed = state.ships[ship.data.faction]?.remove(ship) ?? false;
     if (removed) {
+      if (state.ships[ship.data.faction]?.isEmpty ?? false) {
+        state.ships.remove(ship.data.faction);
+      }
       if (trackedShip != null && trackedShip!.data.key == ship.data.key) {
         trackRandomShip();
       }
@@ -175,14 +178,24 @@ class GameStateProvider extends ChangeNotifier {
   }
 
   void trackRandomShip({bool notify = true}) {
+    debugPrint("tracking new random");
+    if (state.ships.isEmpty) {
+      debugPrint("empty ships");
+      return;
+    }
+
     final faction = state.ships.keys.elementAt(
       rng.nextInt(state.ships.keys.length),
     );
+
+    final list = state.ships[faction];
+    if (list == null || list.isEmpty) {
+      debugPrint("empty faction $faction");
+      return;
+    }
     setTrackingShip(
       notify: notify,
-      ship: state.ships[faction]!.elementAt(
-        rng.nextInt(state.ships[faction]!.length),
-      ),
+      ship: list.elementAt(rng.nextInt(list.length)),
     );
   }
 

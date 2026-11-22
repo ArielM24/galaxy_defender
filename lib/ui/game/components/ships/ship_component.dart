@@ -326,6 +326,13 @@ class ShipComponent extends PositionComponent
   // if returns null the target is dead or is not setted
   ShipComponent? getCurrentTarget() {
     if (data.currentFactionTarget != null) {
+      if (!game.gameStateProvider.state.ships.containsKey(
+        data.currentFactionTarget,
+      )) {
+        data.currentFactionTarget = null;
+        data.currentKeyTarget = "";
+        return null;
+      }
       for (ShipComponent ship
           in game.gameStateProvider.state.ships[data.currentFactionTarget]!) {
         if (ship.data.key == data.currentKeyTarget) {

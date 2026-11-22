@@ -144,9 +144,11 @@ class GalaxyGame extends FlameGame
   void _onUpdateState() {
     if (gameStateProvider.isRunning) {
       overlays.remove(PauseOverlay.overlayKey);
+      _checkTrackedShipTimer.timer.resume();
       resumeEngine();
     } else if (gameStateProvider.isPaused) {
       overlays.add(PauseOverlay.overlayKey);
+      _checkTrackedShipTimer.timer.pause();
       pauseEngine();
     }
   }
@@ -197,6 +199,8 @@ class GalaxyGame extends FlameGame
     if (gameStateProvider.trackedShip != null) {
       camera.follow(gameStateProvider.trackedShip!);
       _miniMapCamera.follow(gameStateProvider.trackedShip!);
+    } else {
+      gameStateProvider.trackRandomShip();
     }
   }
 
